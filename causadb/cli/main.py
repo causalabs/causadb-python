@@ -20,7 +20,7 @@ def login():
     token = typer.prompt("Token", default="12345")
 
     data = requests.post(
-        "http://localhost:8000/cli/verify-user",
+        "http://localhost:8000/cli/verify-org",
         json={"org_id": org_id, "token": token},
     )
 
@@ -37,7 +37,7 @@ def login():
             with open(file_path, "r") as f:
                 config = toml.load(f)
 
-        token_name = data.json()["token_name"]
+        token_name = "default"
         config[token_name] = {
             "org_id": org_id,
             "token": token,
