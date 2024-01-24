@@ -15,12 +15,14 @@ def setup():
     """
     Set up a CausaDB account on this device
     """
-    org_id = typer.prompt("Organization ID", default="causa-test")
-    token = typer.prompt("Token", default="12345")
+    token_id = typer.prompt(
+        "Token ID", default="ct-LZj5EvCgMAxYuo07vxR4LbGcfo4Ydo3u")
+    token_secret = typer.prompt(
+        "Token secret", default="cs-WGVTHQTFQ8HTHLogYrX31dyy9FK8ijFt")
 
     data = requests.post(
         f"{CAUSADB_API_URL}/cli/verify-org",
-        json={"org_id": org_id, "token": token},
+        json={"token_id": token_id, "token_secret": token_secret},
     )
 
     if data.status_code == 200:
@@ -36,11 +38,9 @@ def setup():
             with open(config_filepath, "r") as f:
                 config = toml.load(f)
 
-        profile_name = org_id + ":" + data.json()["token_name"]
-
-        config[profile_name] = {
-            "org_id": org_id,
-            "token": token,
+        config["default"] = {
+            "token_id": token_id,
+            "token_secret": token_secret,
         }
 
         with open(config_filepath, "w") as f:
