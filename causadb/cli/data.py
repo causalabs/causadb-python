@@ -13,13 +13,12 @@ def list():
     List linked datasources.
     """
     config = load_config()
-    token_id = config["default"]["token_id"]
     token_secret = config["default"]["token_secret"]
 
     headers = {"token": token_secret}
 
     data = requests.get(
-        f"{CAUSADB_API_URL}/data/list", headers=headers
+        f"{CAUSADB_API_URL}/data", headers=headers
     ).json()
 
     show_table(data["data"], columns=["id", "name", "type"])
@@ -64,9 +63,9 @@ def add(
     headers = {"token": token_secret}
 
     data = requests.post(
-        f"{CAUSADB_API_URL}/data/add",
+        f"{CAUSADB_API_URL}/data/{data_name}",
         headers=headers,
-        json={"data_name": data_name, "data_contents": dataset},
+        json={"data_contents": dataset},
     ).json()
 
     if data["status"] == "success":
@@ -98,9 +97,8 @@ def remove(
 
     # Make a request to the remove data endpoint
     response = requests.delete(
-        f"{CAUSADB_API_URL}/data/remove/{name}",
-        headers=headers,
-        # json={"data_name": name},
+        f"{CAUSADB_API_URL}/data/{name}",
+        headers=headers
     )
 
     # Check the response status and print appropriate message

@@ -2,6 +2,19 @@
 
 An easy-to-use platform for building and querying causal AI models in the cloud.
 
+## Usage
+
+### CLI
+
+To set up your account, run
+
+```
+causadb account setup
+```
+
+You'll be asked for an ...
+
+
 ## Developers
 
 This project uses the Poetry package manager. To get it set up, run
