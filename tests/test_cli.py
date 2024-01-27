@@ -34,8 +34,17 @@ def test_data_add():
 def test_models_add():
     result = runner.invoke(
         app, ["models", "add", "--model", "test", "--config", "tests/model-config.json"])
+
     assert result.exit_code == 0
     # assert "Successfully added model" in result.stdout
+
+
+def test_models_attach():
+    result = runner.invoke(
+        app, ["models", "attach", "--model", "test", "--data", "test"])
+
+    assert result.exit_code == 0
+    # assert "Successfully attached data" in result.stdout
 
 
 def test_models_info():
@@ -43,6 +52,23 @@ def test_models_info():
         app, ["models", "info", "--model", "test"])
     assert result.exit_code == 0
     assert "id" in result.stdout
+
+
+def test_models_train():
+    result = runner.invoke(
+        app, ["models", "train", "--model", "test"])
+
+    print(result.stdout)
+
+    assert result.exit_code == 0
+
+
+def test_models_detach():
+    result = runner.invoke(
+        app, ["models", "detach", "--model", "test"])
+
+    assert result.exit_code == 0
+    # assert "Successfully detached data" in result.stdout
 
 
 def test_data_remove():

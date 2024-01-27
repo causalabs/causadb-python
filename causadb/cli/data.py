@@ -66,7 +66,7 @@ def add(
     data = requests.post(
         f"{CAUSADB_API_URL}/data/{data_name}",
         headers=headers,
-        json={"data_contents": dataset},
+        json=dataset,
     ).json()
 
     if data["status"] == "success":

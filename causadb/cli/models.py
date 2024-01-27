@@ -76,10 +76,10 @@ def add(
     data = requests.post(
         f"{CAUSADB_API_URL}/models/{model_name}",
         headers=headers,
-        json={"config": model_config},
+        json=model_config,
     ).json()
 
-    print(data)
+    typer.echo(data["message"])
 
 
 @app.command()
@@ -114,7 +114,7 @@ def remove(
         headers=headers
     ).json()
 
-    print(response["message"])
+    typer.echo(response["message"])
 
 
 @app.command()
@@ -204,3 +204,34 @@ def detach(
     ).json()
 
     typer.echo("Data successfully detached from model.")
+
+
+@app.command()
+def train(
+    model_name: Annotated[str, typer.Option(
+        "--model",
+        help="The name of the model you wish to train.")] = None
+):
+    """
+    Train a model.
+    """
+
+    if model_name is None:
+        model_name = typer.prompt(
+            "Enter the name of the model you wish to train (e.g. my-model)")
+
+    config = load_config()
+    token_secret = config["default"]["token_secret"]
+
+    headers = {"token": token_secret}
+
+    data = requests.post(
+        f"{CAUSADB_API_URL}/models/{model_name}/train",
+        headers=headers,
+    ).json()
+
+    if data["status"] == "success":
+        typer.echo(
+            f"Model training started. Check the status with `causadb models info --model {model_name}`.")
+    else:
+        typer.echo("Model training failed. Check the logs for more information.")

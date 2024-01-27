@@ -1,9 +1,9 @@
 {
     "edges": [
-        ["x1", "x2"],
-        ["x2", "x3"],
-        ["x1", "x3"]
+        ["x", "y"],
+        ["x", "z"],
+        ["y", "z"]
     ],
-    "nodes": ["x1", "x2", "x3"],
+    "nodes": ["x", "y", "z"],
     "node_types": {"x1": {"type": "seasonal", "min": 0, "max": 1}}
 }
