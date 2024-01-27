@@ -28,7 +28,7 @@ def list():
 @app.command()
 def add(
     model_name_raw: Annotated[str, typer.Option(
-        "--name",
+        "--model",
         help="The name of your model, used for accessing it later.")] = None,
     model_config_filepath: Annotated[str, typer.Option(
         "--config",
@@ -85,7 +85,7 @@ def add(
 @app.command()
 def remove(
     model_name: Annotated[str, typer.Option(
-        "--name",
+        "--model",
         help="The name of the model you wish to remove.")] = None,
 ):
     """
@@ -118,12 +118,31 @@ def remove(
 
 
 @app.command()
-def view():
+def info(
+    model_name: Annotated[str, typer.Option(
+        "--model",
+        help="The name of the model you wish to retrieve information about.")] = None
+):
     """
-    View a model.
+    Show info about a model.
     """
 
-    typer.echo("Viewing a model")
+    if model_name is None:
+        model_name = typer.prompt(
+            "Enter the name of the model you wish to attach data to (e.g. my-model)")
+
+    config = load_config()
+    token_secret = config["default"]["token_secret"]
+
+    headers = {"token": token_secret}
+
+    data = requests.get(
+        f"{CAUSADB_API_URL}/models/{model_name}",
+        headers=headers,
+    ).json()
+
+    # Pretty print the response
+    typer.echo(json.dumps(data, indent=4))
 
 
 @app.command()

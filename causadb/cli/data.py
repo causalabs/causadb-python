@@ -29,6 +29,7 @@ def add(
     filepath: Annotated[str, typer.Option(
         help="The path to your data file.")] = None,
     name: Annotated[str, typer.Option(
+        "--data",
         help="The name to give your new data source.")] = None
 ):
     """
@@ -78,6 +79,7 @@ def add(
 @app.command()
 def remove(
     name: Annotated[str, typer.Option(
+        "--data",
         help="Name of the data source you want to remove.")] = None
 ):
     """
