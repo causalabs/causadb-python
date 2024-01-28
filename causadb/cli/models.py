@@ -235,3 +235,32 @@ def train(
             f"Model training started. Check the status with `causadb models info --model {model_name}`.")
     else:
         typer.echo("Model training failed. Check the logs for more information.")
+
+
+@app.command()
+def status(
+    model_name: Annotated[str, typer.Option(
+        "--model",
+        help="The name of the model you wish to retrieve status for.")] = None
+):
+    """
+    Show status of a model.
+    """
+
+    if model_name is None:
+        model_name = typer.prompt(
+            "Enter the name of the model you wish to attach data to (e.g. my-model)")
+
+    config = load_config()
+    token_secret = config["default"]["token_secret"]
+
+    headers = {"token": token_secret}
+
+    data = requests.get(
+        f"{CAUSADB_API_URL}/models/{model_name}",
+        headers=headers,
+    ).json()
+
+    model_status = data["details"]["status"]
+
+    typer.echo(f"Model status: {model_status}")
