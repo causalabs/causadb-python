@@ -264,3 +264,41 @@ def status(
     model_status = data["details"]["status"]
 
     typer.echo(f"Model status: {model_status}")
+
+
+@app.command()
+def simulate_action(
+    model_name: Annotated[str, typer.Option(
+        "--model",
+        help="The name of the model you wish to train.")] = None,
+    action_config_filepath: Annotated[str, typer.Option(
+        "--action",
+        help="Path to the action config (e.g. /path/to/action.json)")] = None
+):
+    """
+    Simulate an action.
+    """
+
+    if model_name is None:
+        model_name = typer.prompt(
+            "Enter the name of the model you wish to train (e.g. my-model)")
+
+    if action_config_filepath is None:
+        action_config_filepath = typer.prompt(
+            "Enter the path to your action config file (e.g. /path/to/config.json)")
+
+    config = load_config()
+    token_secret = config["default"]["token_secret"]
+
+    headers = {"token": token_secret}
+
+    action_config = json.load(open(action_config_filepath, "r"))
+
+    data = requests.post(
+        f"{CAUSADB_API_URL}/models/{model_name}/simulate-action",
+        headers=headers,
+        json=action_config,
+    ).json()
+
+    if data["status"] == "success":
+        typer.echo(json.dumps(data["outcome"], indent=4))
