@@ -6,7 +6,7 @@ from rich.table import Table
 dotenv.load_dotenv()
 
 
-CAUSADB_API_URL = os.getenv("CAUSADB_API_URL", "https://api.causadb.com")
+CAUSADB_API_URL = os.getenv("CAUSADB_API_URL", "https://api.causadb.com/v1")
 
 
 def load_config():

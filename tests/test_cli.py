@@ -1,4 +1,5 @@
 from typer.testing import CliRunner
+import time
 
 from causadb.cli.main import app
 
@@ -7,7 +8,7 @@ runner = CliRunner()
 
 def test_account_setup():
     result = runner.invoke(
-        app, ["account", "setup"], input="ct-LZj5EvCgMAxYuo07vxR4LbGcfo4Ydo3u\ncs-WGVTHQTFQ8HTHLogYrX31dyy9FK8ijFt\n")
+        app, ["account", "setup"], input="test-token-id\ntest-token-secret\n")
     assert result.exit_code == 0
     assert "Setup successful" in result.stdout
 
@@ -58,7 +59,15 @@ def test_models_train():
     result = runner.invoke(
         app, ["models", "train", "--model", "test"])
 
-    print(result.stdout)
+    assert result.exit_code == 0
+
+    trained_status = False
+    while not trained_status:
+        result = runner.invoke(
+            app, ["models", "status", "--model", "test"])
+        if "trained" in result.stdout:
+            trained_status = True
+        time.sleep(1)
 
     assert result.exit_code == 0
 
@@ -108,4 +117,4 @@ def test_account_remove():
 
     # Log back in
     result = runner.invoke(
-        app, ["account", "setup"], input="ct-LZj5EvCgMAxYuo07vxR4LbGcfo4Ydo3u\ncs-WGVTHQTFQ8HTHLogYrX31dyy9FK8ijFt\n")
+        app, ["account", "setup"], input="test-token-id\ntest-token-secret\n")

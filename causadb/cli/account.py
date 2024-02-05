@@ -16,16 +16,18 @@ def setup():
     Set up a CausaDB account on this device
     """
     token_id = typer.prompt(
-        "Token ID", default="ct-LZj5EvCgMAxYuo07vxR4LbGcfo4Ydo3u")
+        "Token ID")
     token_secret = typer.prompt(
-        "Token secret", default="cs-WGVTHQTFQ8HTHLogYrX31dyy9FK8ijFt")
+        "Token secret")
 
-    data = requests.post(
-        f"{CAUSADB_API_URL}/cli/verify-org",
-        json={"token_id": token_id, "token_secret": token_secret},
+    headers = {"token": token_secret}
+
+    response = requests.get(
+        f"{CAUSADB_API_URL}/account",
+        headers=headers
     )
 
-    if data.status_code == 200:
+    if response.status_code == 200:
         typer.echo(
             "Setup successful, saving credentials to ~/.causadb/config.toml.")
 
