@@ -40,6 +40,18 @@ def test_model_create(client):
     assert model.model_name == "test-model"
     assert model.client == client
 
+    config = {
+        "edges": [
+            ["x", "y"],
+            ["x", "z"],
+            ["y", "z"]
+        ],
+        "nodes": ["x", "y", "z"],
+        "node_types": {"x1": {"type": "seasonal", "min": 0, "max": 1}}
+    }
+
+    model._update_config(config)
+
     # data = client.create_data("test-data")
     # assert data is not None
 

@@ -2,8 +2,7 @@ import requests
 import os
 from .data import Data
 from .model import Model
-
-CAUSADB_URL = os.getenv("CAUSADB_URL", "https://api.causadb.com/v1")
+from .utils import CAUSADB_URL
 
 
 class CausaDB:
