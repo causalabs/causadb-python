@@ -1,6 +1,6 @@
 import typer
 import requests
-from causadb.cli.utils import load_config, show_table, CAUSADB_API_URL
+from causadb.cli.utils import load_config, show_table, CAUSADB_URL
 from typing import Annotated
 import json
 
@@ -18,7 +18,7 @@ def list():
     headers = {"token": token_secret}
 
     data = requests.get(
-        f"{CAUSADB_API_URL}/models", headers=headers
+        f"{CAUSADB_URL}/models", headers=headers
     ).json()
 
     show_table(data["models"], columns=[
@@ -74,7 +74,7 @@ def add(
     headers = {"token": token_secret}
 
     data = requests.post(
-        f"{CAUSADB_API_URL}/models/{model_name}",
+        f"{CAUSADB_URL}/models/{model_name}",
         headers=headers,
         json=model_config,
     ).json()
@@ -110,7 +110,7 @@ def remove(
 
     # Make a request to the remove data endpoint
     response = requests.delete(
-        f"{CAUSADB_API_URL}/models/{model_name}",
+        f"{CAUSADB_URL}/models/{model_name}",
         headers=headers
     ).json()
 
@@ -137,7 +137,7 @@ def info(
     headers = {"token": token_secret}
 
     data = requests.get(
-        f"{CAUSADB_API_URL}/models/{model_name}",
+        f"{CAUSADB_URL}/models/{model_name}",
         headers=headers,
     ).json()
 
@@ -172,7 +172,7 @@ def attach(
     headers = {"token": token_secret}
 
     data = requests.post(
-        f"{CAUSADB_API_URL}/models/{model_name}/attach/{data_name}",
+        f"{CAUSADB_URL}/models/{model_name}/attach/{data_name}",
         headers=headers,
     ).json()
 
@@ -199,7 +199,7 @@ def detach(
     headers = {"token": token_secret}
 
     data = requests.delete(
-        f"{CAUSADB_API_URL}/models/{model_name}/detach",
+        f"{CAUSADB_URL}/models/{model_name}/detach",
         headers=headers,
     ).json()
 
@@ -226,7 +226,7 @@ def train(
     headers = {"token": token_secret}
 
     data = requests.post(
-        f"{CAUSADB_API_URL}/models/{model_name}/train",
+        f"{CAUSADB_URL}/models/{model_name}/train",
         headers=headers,
     ).json()
 
@@ -257,7 +257,7 @@ def status(
     headers = {"token": token_secret}
 
     data = requests.get(
-        f"{CAUSADB_API_URL}/models/{model_name}",
+        f"{CAUSADB_URL}/models/{model_name}",
         headers=headers,
     ).json()
 
@@ -295,7 +295,7 @@ def simulate_action(
     action_config = json.load(open(action_config_filepath, "r"))
 
     data = requests.post(
-        f"{CAUSADB_API_URL}/models/{model_name}/simulate-action",
+        f"{CAUSADB_URL}/models/{model_name}/simulate-action",
         headers=headers,
         json=action_config,
     ).json()

@@ -1,6 +1,6 @@
 import typer
 import requests
-from causadb.cli.utils import load_config, show_table, CAUSADB_API_URL
+from causadb.cli.utils import load_config, show_table, CAUSADB_URL
 import pandas as pd
 from typing import Annotated
 
@@ -18,7 +18,7 @@ def list():
     headers = {"token": token_secret}
 
     data = requests.get(
-        f"{CAUSADB_API_URL}/data", headers=headers
+        f"{CAUSADB_URL}/data", headers=headers
     ).json()
 
     show_table(data["data"], columns=["id", "name", "type"])
@@ -64,7 +64,7 @@ def add(
     headers = {"token": token_secret}
 
     data = requests.post(
-        f"{CAUSADB_API_URL}/data/{data_name}",
+        f"{CAUSADB_URL}/data/{data_name}",
         headers=headers,
         json=dataset,
     ).json()
@@ -99,7 +99,7 @@ def remove(
 
     # Make a request to the remove data endpoint
     response = requests.delete(
-        f"{CAUSADB_API_URL}/data/{name}",
+        f"{CAUSADB_URL}/data/{name}",
         headers=headers
     )
 

@@ -5,7 +5,7 @@ import toml
 import os
 import causadb.cli.utils as utils
 
-CAUSADB_API_URL = utils.CAUSADB_API_URL
+CAUSADB_URL = utils.CAUSADB_URL
 
 app = typer.Typer()
 
@@ -23,7 +23,7 @@ def setup():
     headers = {"token": token_secret}
 
     response = requests.get(
-        f"{CAUSADB_API_URL}/account",
+        f"{CAUSADB_URL}/account",
         headers=headers
     )
 
