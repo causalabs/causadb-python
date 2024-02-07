@@ -62,6 +62,17 @@ class CausaDB:
         """
         return Model(model_name, self)
 
+    def add_data(self, data_name: str) -> Data:
+        """Add data to the CausaDB system.
+
+        Args:
+            data_name (str): The name of the data.
+
+        Returns:
+            Data: The data object.
+        """
+        return Data(data_name, self)
+
     def get_model(self, model_name: str) -> Model:
         """Get a model by name.
 
@@ -71,7 +82,22 @@ class CausaDB:
         Returns:
             Model: The model object.
         """
-        return Model(model_name)
+        headers = {"token": self.token_secret}
+
+        try:
+            response = requests.get(
+                f"{CAUSADB_URL}/models/{model_name}", headers=headers
+            ).json()
+        except:
+            raise Exception("CausaDB server request failed")
+
+        # Create a model object from the JSON response
+        model_json = {"name": model_name,
+                      "config": response["details"]["config"]}
+
+        model = Model.from_json(model_json, self)
+
+        return model
 
     def list_models(self) -> list[Model]:
         """List all models.
@@ -81,13 +107,19 @@ class CausaDB:
         """
         headers = {"token": self.token_secret}
 
-        response = requests.get(
-            f"{CAUSADB_URL}/models", headers=headers
-        ).json()
+        try:
+            response = requests.get(
+                f"{CAUSADB_URL}/models", headers=headers
+            ).json()
+        except:
+            raise Exception("CausaDB server request failed")
 
-        print(response)
+        model_list = []
+        for model_spec in response.get("models", []):
+            model = Model.from_json(model_spec, self)
+            model_list.append(model)
 
-        return [Model("model1"), Model("model2")]
+        return model_list
 
     def get_data(self, data_name: str) -> Data:
         """Get a data by name.
@@ -99,3 +131,20 @@ class CausaDB:
             Data: The data object.
         """
         return Data(data_name)
+
+    def list_data(self) -> list[Data]:
+        """List all data.
+
+        Returns:
+            list[Data]: A list of data objects.
+        """
+        headers = {"token": self.token_secret}
+
+        try:
+            response = requests.get(
+                f"{CAUSADB_URL}/data", headers=headers
+            ).json()
+        except:
+            raise Exception("CausaDB client failed to connect to server")
+
+        return [Data("data1", self), Data("data2", self)]

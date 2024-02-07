@@ -33,6 +33,17 @@ def test_bad_tokens(client):
     assert client.token_secret == "test-token-secret"
 
 
+def test_data_add(client):
+    client \
+        .add_data("test-data-2") \
+        .from_csv("tests/test-data.csv")
+
+
+def test_data_list(client):
+    data_list = client.list_data()
+    assert data_list is not None
+
+
 def test_model_create(client):
     # Check that models can be created
     model = client.create_model("test-model")
@@ -62,3 +73,17 @@ def test_model_create(client):
     #     ("SaturatedFatsInDiet", "Weight"),
     #     ("Weight", "BMI"),
     # ])
+
+
+def test_model_list(client):
+    model_list = client.list_models()
+    assert model_list is not None
+    assert len(model_list) > 0
+    assert "test-model" in [model.model_name for model in model_list]
+
+
+def test_model_get(client):
+    model = client.get_model("test-model")
+    assert model is not None
+    assert model.model_name == "test-model"
+    assert model.client == client

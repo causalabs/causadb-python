@@ -3,9 +3,6 @@ from .utils import CAUSADB_URL
 
 
 class Model:
-    def __repr__(self) -> str:
-        return f"<Model {self.model_name}>"
-
     def __init__(self, model_name: str, client: "CausaDB") -> None:
         """Initializes the Model class.
 
@@ -15,6 +12,26 @@ class Model:
         """
         self.model_name = model_name
         self.client = client
+        self.config = {}
+
+    def __repr__(self) -> str:
+        return f"<Model {self.model_name}>"
+
+    @staticmethod
+    def from_json(model_spec: dict, client: "CausaDB") -> "Model":
+        """Load a model from a JSON specification from the server.
+
+        Args:
+            model_spec (dict): The model specification.
+            client (CausaDB): A CausaDB client.
+
+        Returns:
+            Model: The model object.
+        """
+        model = Model(model_spec["name"], client)
+        model.config = model_spec["config"]
+
+        return model
 
     def _update_config(self, config: dict) -> None:
         """Update the model with a new config.
