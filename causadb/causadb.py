@@ -47,9 +47,8 @@ class CausaDB:
         if response.status_code == 200:
             self.token_id = token_id
             self.token_secret = token_secret
-            return True
-
-        return False
+        else:
+            raise Exception("Invalid token")
 
     def create_model(self, model_name: str) -> Model:
         """Create a model and add it to the CausaDB system.
@@ -91,11 +90,8 @@ class CausaDB:
         except:
             raise Exception("CausaDB server request failed")
 
-        # Create a model object from the JSON response
-        model_json = {"name": model_name,
-                      "config": response["details"]["config"]}
-
-        model = Model.from_json(model_json, self)
+        # If the model exists, return it
+        model = Model(model_name, self)
 
         return model
 
@@ -116,7 +112,7 @@ class CausaDB:
 
         model_list = []
         for model_spec in response.get("models", []):
-            model = Model.from_json(model_spec, self)
+            model = Model(model_spec["name"], self)
             model_list.append(model)
 
         return model_list

@@ -27,8 +27,8 @@ def test_client_initialization(client):
 
 def test_bad_tokens(client):
     # Check that bad tokens are rejected
-    response = client.set_token("bad-token-id", "bad-token-secret")
-    assert response is False
+    with pytest.raises(Exception):
+        response = client.set_token("bad-token-id", "bad-token-secret")
     assert client.token_id == "test-token-id"
     assert client.token_secret == "test-token-secret"
 
@@ -42,48 +42,65 @@ def test_data_add(client):
 def test_data_list(client):
     data_list = client.list_data()
     assert data_list is not None
+    assert len(data_list) > 0
 
 
 def test_model_create(client):
     # Check that models can be created
-    model = client.create_model("test-model")
+    model = client.create_model("test-model-12345")
     assert model is not None
-    assert model.model_name == "test-model"
+    assert model.model_name == "test-model-12345"
     assert model.client == client
 
-    config = {
-        "edges": [
-            ["x", "y"],
-            ["x", "z"],
-            ["y", "z"]
-        ],
-        "nodes": ["x", "y", "z"],
-        "node_types": {"x1": {"type": "seasonal", "min": 0, "max": 1}}
-    }
 
-    model._update_config(config)
+def test_set_nodes(client):
+    model = client.get_model("test-model-12345")
+    model.set_nodes(["x", "y", "z"])
+    nodes = model.get_nodes()
+    assert "x" in nodes
+    assert len(nodes) == 3
 
-    # data = client.create_data("test-data")
-    # assert data is not None
 
-    # data.from_csv("tests/test-data.csv")
-    # assert type(data.columns) == list
+def test_set_edges(client):
+    model = client.get_model("test-model-12345")
+    model.set_edges([
+        ("SaturatedFatsInDiet", "Weight"),
+        ("Weight", "BMI"),
+    ])
+    edges = model.get_edges()
+    assert ("SaturatedFatsInDiet", "Weight") in edges
+    assert len(edges) == 2
 
-    # model.set_edges([
-    #     ("SaturatedFatsInDiet", "Weight"),
-    #     ("Weight", "BMI"),
-    # ])
+
+def test_set_node_types(client):
+    model = client.get_model("test-model-12345")
+    model.set_node_types({
+        "x": "continuous",
+        "y": "continuous",
+        "z": "continuous",
+    })
+    node_types = model.get_node_types()
+    assert node_types["x"] == "continuous"
+    assert len(node_types) == 3
 
 
 def test_model_list(client):
     model_list = client.list_models()
     assert model_list is not None
     assert len(model_list) > 0
-    assert "test-model" in [model.model_name for model in model_list]
+    assert "test-model-12345" in [model.model_name for model in model_list]
 
 
 def test_model_get(client):
-    model = client.get_model("test-model")
+    model = client.get_model("test-model-12345")
     assert model is not None
-    assert model.model_name == "test-model"
+    assert model.model_name == "test-model-12345"
     assert model.client == client
+
+
+def test_model_remove(client):
+    model = client \
+        .get_model("test-model-12345") \
+        .remove()
+    model_list = client.list_models()
+    assert "test-model-12345" not in [model.model_name for model in model_list]
