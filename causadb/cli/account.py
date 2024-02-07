@@ -1,5 +1,4 @@
 import typer
-import click
 import requests
 import toml
 import os
