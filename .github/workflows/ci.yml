@@ -1,10 +1,6 @@
 name: CI
 
-on:
-    push:
-        branches:
-            - main
-            - feature/*
+on: push
 
 jobs:
     build:
@@ -36,3 +32,9 @@ jobs:
                   message: "[auto-commit] Increment version number"
                   pull: "--rebase --autostash"
                   default_author: github_actions
+
+            - name: Push to PyPI (main branch only)
+              if: github.ref == 'refs/heads/main'
+              run: |
+                  poetry config pypi-token.pypi ${{ secrets.PYPI_API_TOKEN }}
+                  poetry publish --build
