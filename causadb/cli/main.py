@@ -1,26 +1,9 @@
 import typer
+import causadb.cli.account as account
+import causadb.cli.data as data
+import causadb.cli.models as models
 
 app = typer.Typer()
-
-
-@app.callback()
-def callback():
-    """
-    Build, manage, and use causal models on CausaDB
-    """
-
-
-@app.command()
-def shoot():
-    """
-    Shoot the portal gun
-    """
-    typer.echo("Shooting portal gun")
-
-
-@app.command()
-def load():
-    """
-    Load the portal gun
-    """
-    typer.echo("Loading portal gun")
+app.add_typer(account.app, name="account", help="Manage account")
+app.add_typer(data.app, name="data", help="Manage linked datasources")
+app.add_typer(models.app, name="models", help="Manage models")
