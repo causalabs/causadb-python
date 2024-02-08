@@ -116,9 +116,25 @@ def test_model_simulate_action(client):
     assert outcome["ate"]["x"] == 1.0
     assert "ate_std" in outcome
 
-# def test_model_remove(client):
-#     model = client \
-#         .get_model("test-model-12345") \
-#         .remove()
-#     model_list = client.list_models()
-#     assert "test-model-12345" not in [model.model_name for model in model_list]
+
+def test_model_detach(client):
+    model = client.get_model("test-model-12345")
+    model.detach("test-data-2")
+    with pytest.raises(Exception):
+        model.train()
+
+
+def test_data_remove(client):
+    data = client \
+        .get_data("test-data-2") \
+        .remove()
+    data_list = client.list_data()
+    assert "test-data-2" not in [data.data_name for data in data_list]
+
+
+def test_model_remove(client):
+    model = client \
+        .get_model("test-model-12345") \
+        .remove()
+    model_list = client.list_models()
+    assert "test-model-12345" not in [model.model_name for model in model_list]

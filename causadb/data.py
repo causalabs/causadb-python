@@ -17,8 +17,29 @@ class Data:
         self.data_name = data_name
         self.client = client
 
-    def _update_data(self, data: dict) -> None:
-        """Update the database with new data.
+    def remove(self) -> None:
+        """Remove the data from the CausaDB system."""
+        headers = {"token": self.client.token_secret}
+        try:
+            requests.delete(
+                f"{CAUSADB_URL}/data/{self.data_name}",
+                headers=headers,
+            )
+        except:
+            raise Exception("CausaDB server request failed")
+
+    def from_csv(self, filepath: str) -> None:
+        """Add data from a CSV file.
+
+        Args:
+            filepath (str): The path to the CSV file.
+        """
+        dataset = pd.read_csv(filepath).to_dict()
+
+        self._update(dataset)
+
+    def _update(self, data: dict) -> None:
+        """Pushes the data to the CausaDB server.
 
         Args:
             data (dict): The new data.
@@ -38,13 +59,3 @@ class Data:
         if response["status"] != "success":
             # If the response is not successful, raise an exception and include the error message
             raise Exception(f"Failed to update data: {response['message']}")
-
-    def from_csv(self, filepath: str) -> None:
-        """Add data from a CSV file.
-
-        Args:
-            filepath (str): The path to the CSV file.
-        """
-        dataset = pd.read_csv(filepath).to_dict()
-
-        self._update_data(dataset)

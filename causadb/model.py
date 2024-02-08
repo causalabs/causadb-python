@@ -195,10 +195,9 @@ class Model:
         headers = {"token": self.client.token_secret}
 
         try:
-            response = requests.post(
+            response = requests.delete(
                 f"{CAUSADB_URL}/models/{self.model_name}/detach",
-                headers=headers,
-                json={"data_name": data_name}
+                headers=headers
             ).json()
         except:
             raise Exception("CausaDB server request failed")
@@ -219,9 +218,14 @@ class Model:
             response = requests.post(
                 f"{CAUSADB_URL}/models/{self.model_name}/train",
                 headers=headers
-            ).json()
+            )
         except:
             raise Exception("CausaDB server request failed")
+
+        # If HTTPException status code is 400, raise an exception
+        if response.status_code == 400:
+            raise Exception(response.json()["detail"])
+        response = response.json()
 
         if wait:
             while self.status() != "trained":

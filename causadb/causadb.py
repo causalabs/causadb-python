@@ -126,7 +126,17 @@ class CausaDB:
         Returns:
             Data: The data object.
         """
-        return Data(data_name)
+        headers = {"token": self.token_secret}
+        try:
+            response = requests.get(
+                f"{CAUSADB_URL}/data/{data_name}", headers=headers
+            ).json()
+        except:
+            raise Exception("CausaDB server request failed")
+
+        data = Data(data_name, self)
+
+        return data
 
     def list_data(self) -> list[Data]:
         """List all data.
@@ -143,4 +153,9 @@ class CausaDB:
         except:
             raise Exception("CausaDB client failed to connect to server")
 
-        return [Data("data1", self), Data("data2", self)]
+        data_list = []
+        for data_spec in response.get("data", []):
+            data = Data(data_spec["name"], self)
+            data_list.append(data)
+
+        return data_list
