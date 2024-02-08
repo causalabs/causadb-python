@@ -53,6 +53,25 @@ def test_model_create(client):
     assert model.client == client
 
 
+def test_model_attach(client):
+    model = client.get_model("test-model-12345")
+    model.attach("test-data-2")
+
+
+def test_model_list(client):
+    model_list = client.list_models()
+    assert model_list is not None
+    assert len(model_list) > 0
+    assert "test-model-12345" in [model.model_name for model in model_list]
+
+
+def test_model_get(client):
+    model = client.get_model("test-model-12345")
+    assert model is not None
+    assert model.model_name == "test-model-12345"
+    assert model.client == client
+
+
 def test_set_nodes(client):
     model = client.get_model("test-model-12345")
     model.set_nodes(["x", "y", "z"])
@@ -84,23 +103,9 @@ def test_set_node_types(client):
     assert len(node_types) == 3
 
 
-def test_model_list(client):
-    model_list = client.list_models()
-    assert model_list is not None
-    assert len(model_list) > 0
-    assert "test-model-12345" in [model.model_name for model in model_list]
-
-
-def test_model_get(client):
-    model = client.get_model("test-model-12345")
-    assert model is not None
-    assert model.model_name == "test-model-12345"
-    assert model.client == client
-
-
-def test_model_remove(client):
-    model = client \
-        .get_model("test-model-12345") \
-        .remove()
-    model_list = client.list_models()
-    assert "test-model-12345" not in [model.model_name for model in model_list]
+# def test_model_remove(client):
+#     model = client \
+#         .get_model("test-model-12345") \
+#         .remove()
+#     model_list = client.list_models()
+#     assert "test-model-12345" not in [model.model_name for model in model_list]

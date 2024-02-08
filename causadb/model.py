@@ -14,6 +14,16 @@ class Model:
         self.model_name = model_name
         self.config = {}
 
+        # Pull config from the server
+        headers = {"token": self.client.token_secret}
+        response = requests.get(
+            f"{CAUSADB_URL}/models/{self.model_name}",
+            headers=headers,
+        ).json()
+
+        if "details" in response:
+            self.config = response["details"]["config"]
+
         self._update()
 
     def __repr__(self) -> str:
@@ -157,8 +167,53 @@ class Model:
 
         return response["details"]["config"]["node_types"]
 
+    def attach(self, data_name: str) -> None:
+        """Attach data to the model.
+
+        Args:
+            data_name (str): The name of the data to attach.
+        """
+        headers = {"token": self.client.token_secret}
+
+        try:
+            response = requests.post(
+                f"{CAUSADB_URL}/models/{self.model_name}/attach/{data_name}",
+                headers=headers
+            ).json()
+        except:
+            raise Exception("CausaDB server request failed")
+
+    def detach(self, data_name: str) -> None:
+        """Detach data from the model.
+
+        Args:
+            data_name (str): The name of the data to detach.
+        """
+        headers = {"token": self.client.token_secret}
+
+        try:
+            response = requests.post(
+                f"{CAUSADB_URL}/models/{self.model_name}/detach",
+                headers=headers,
+                json={"data_name": data_name}
+            ).json()
+        except:
+            raise Exception("CausaDB server request failed")
+
+    def train(self) -> None:
+        """Train the model."""
+        headers = {"token": self.client.token_secret}
+
+        try:
+            response = requests.post(
+                f"{CAUSADB_URL}/models/{self.model_name}/train",
+                headers=headers
+            )
+        except:
+            raise Exception("CausaDB server request failed")
+
     def _update(self) -> None:
-        """Update the model with the latest data. Pushes the current state of the model to the CausaDB server."""
+        """Pushes the current state of the model to the CausaDB server."""
         headers = {"token": self.client.token_secret}
 
         try:
