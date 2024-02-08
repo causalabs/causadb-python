@@ -112,8 +112,9 @@ def test_model_train(client):
 def test_model_simulate_action(client):
     model = client.get_model("test-model-12345")
     outcome = model.simulate_action({"x": [0, 1]})
-    print(outcome)
-    assert outcome is not None
+    assert type(outcome) == dict
+    assert outcome["ate"]["x"] == 1.0
+    assert "ate_std" in outcome
 
 # def test_model_remove(client):
 #     model = client \

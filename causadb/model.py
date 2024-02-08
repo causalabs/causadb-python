@@ -1,5 +1,7 @@
 import requests
 import time
+import pandas as pd
+
 from .utils import CAUSADB_URL
 
 
@@ -245,6 +247,31 @@ class Model:
         model_status = response["details"]["status"]
 
         return model_status
+
+    def simulate_action(self, action: dict) -> dict:
+        """Simulate an action on the model.
+
+        Args:
+            action (dict): A dictionary representing the action.
+
+        Returns:
+            dict: A dictionary representing the result of the action.
+        """
+        headers = {"token": self.client.token_secret}
+
+        try:
+            response = requests.post(
+                f"{CAUSADB_URL}/models/{self.model_name}/simulate-action",
+                headers=headers,
+                json=action,
+            ).json()
+        except:
+            raise Exception("CausaDB server request failed")
+
+        if "outcome" in response:
+            return response["outcome"]
+
+        raise Exception("CausaDB server request failed")
 
     def _update(self) -> None:
         """Pushes the current state of the model to the CausaDB server."""
