@@ -19,6 +19,7 @@ toml = "^0.10.2"
 rich = "^13.7.0"
 pandas = "^2.2.0"
 marko = "^2.0.2"
+setuptools = "^69.0.3"
 
 [tool.poetry.group.dev.dependencies]
 invoke = "^2.2.0"
