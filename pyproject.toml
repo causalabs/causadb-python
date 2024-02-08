@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "causadb"
-version = "1.0.2"
+version = "1.0.3"
 description = ""
 authors = ["Jordan hart <jordan@causa.tech>"]
 readme = "README.md"
@@ -16,13 +16,16 @@ python = "^3.10"
 typer = {extras = ["all"], version = "^0.9.0"}
 requests = "^2.31.0"
 toml = "^0.10.2"
-python-dotenv = "^1.0.1"
 rich = "^13.7.0"
 pandas = "^2.2.0"
-pytest = "^7.4.4"
+marko = "^2.0.2"
+setuptools = "^69.0.3"
 
 [tool.poetry.group.dev.dependencies]
 invoke = "^2.2.0"
+pydoc-markdown = "^4.8.2"
+python-dotenv = "^1.0.1"
+pytest = "^7.4.4"
 
 [build-system]
 requires = ["poetry-core"]

@@ -38,3 +38,14 @@ jobs:
               run: |
                   poetry config pypi-token.pypi ${{ secrets.PYPI_API_TOKEN }}
                   poetry publish --build
+
+            - name: Build docs
+              run: |
+                  poetry run inv build-docs
+
+            - name: Deploy to docs branch
+              uses: peaceiris/actions-gh-pages@v3
+              with:
+                  github_token: ${{ secrets.GITHUB_TOKEN }}
+                  publish_branch: docs
+                  publish_dir: ./docs

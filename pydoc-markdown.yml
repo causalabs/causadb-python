@@ -1,0 +1,12 @@
+loaders:
+    - type: python
+      search_path: [causadb]
+renderer:
+    type: mkdocs
+    pages:
+        - title: generated
+          name: generated
+          contents:
+              - causadb.*
+              - model.*
+              - data.*
