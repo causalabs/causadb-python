@@ -18,6 +18,7 @@ requests = "^2.31.0"
 toml = "^0.10.2"
 rich = "^13.7.0"
 pandas = "^2.2.0"
+marko = "^2.0.2"
 
 [tool.poetry.group.dev.dependencies]
 invoke = "^2.2.0"
