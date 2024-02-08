@@ -83,11 +83,11 @@ def test_set_nodes(client):
 def test_set_edges(client):
     model = client.get_model("test-model-12345")
     model.set_edges([
-        ("SaturatedFatsInDiet", "Weight"),
-        ("Weight", "BMI"),
+        ("x", "y"),
+        ("y", "z"),
     ])
     edges = model.get_edges()
-    assert ("SaturatedFatsInDiet", "Weight") in edges
+    assert ("x", "y") in edges
     assert len(edges) == 2
 
 
@@ -102,6 +102,18 @@ def test_set_node_types(client):
     assert node_types["x"] == "continuous"
     assert len(node_types) == 3
 
+
+def test_model_train(client):
+    model = client.get_model("test-model-12345")
+    model.train()
+    assert model.status() == "trained"
+
+
+def test_model_simulate_action(client):
+    model = client.get_model("test-model-12345")
+    outcome = model.simulate_action({"x": [0, 1]})
+    print(outcome)
+    assert outcome is not None
 
 # def test_model_remove(client):
 #     model = client \

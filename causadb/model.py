@@ -1,4 +1,5 @@
 import requests
+import time
 from .utils import CAUSADB_URL
 
 
@@ -200,17 +201,50 @@ class Model:
         except:
             raise Exception("CausaDB server request failed")
 
-    def train(self) -> None:
-        """Train the model."""
+    def train(self, wait=True, poll_interval=0.2) -> None:
+        """Train the model.
+
+        Args:
+            wait (bool): Whether to wait for the model to finish training.
+            poll_interval (float): The interval at which to poll the server for the model status.
+
+        Example:
+            >>> model.train()
+        """
         headers = {"token": self.client.token_secret}
 
         try:
             response = requests.post(
                 f"{CAUSADB_URL}/models/{self.model_name}/train",
                 headers=headers
-            )
+            ).json()
         except:
             raise Exception("CausaDB server request failed")
+
+        if wait:
+            while self.status() != "trained":
+                # Try again in 200ms
+                time.sleep(poll_interval)
+
+    def status(self) -> str:
+        """Get the status of the model.
+
+        Returns:
+            str: The status of the model.
+        """
+        headers = {"token": self.client.token_secret}
+
+        try:
+            response = requests.get(
+                f"{CAUSADB_URL}/models/{self.model_name}",
+                headers=headers,
+            ).json()
+        except:
+            raise Exception("CausaDB server request failed")
+
+        model_status = response["details"]["status"]
+
+        return model_status
 
     def _update(self) -> None:
         """Pushes the current state of the model to the CausaDB server."""
