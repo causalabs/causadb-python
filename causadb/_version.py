@@ -1,4 +1,4 @@
 # Reset to -1 for new minor/major version
 major = 1
 minor = 0
-patch = 4  # d702c6a0f724413175afd534c51439af19e38cd1
+patch = 5  # 0c4157fc9686c9f6b0383522e48a56d2f00d5550
