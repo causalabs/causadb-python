@@ -1,9 +1,15 @@
-name: CI
+name: Deploy to PyPI
 
-on: push
+on:
+    pull_request:
+        types:
+            - closed
+        branches:
+            - main
 
 jobs:
-    build:
+    deploy:
+        if: github.event.pull_request.merged == true
         runs-on: ubuntu-latest
 
         steps:
@@ -21,9 +27,17 @@ jobs:
                   pip install poetry
                   poetry install
 
-            - name: Increment version
+            - name: Bump version
               run: |
-                  poetry run inv increment-version-number
+                  if [[ "${{ github.head_ref }}" == feature/* ]]; then
+                  poetry version minor
+                  elif [[ "${{ github.head_ref }}" == patch/* ]]; then
+                  poetry version patch
+                  fi
+
+            - name: Increment version conditioned on whether
+              run: |
+                  poetry run inv sync-version-py
 
             - name: Commit version increment
               uses: EndBug/add-and-commit@v9
@@ -38,14 +52,3 @@ jobs:
               run: |
                   poetry config pypi-token.pypi ${{ secrets.PYPI_API_TOKEN }}
                   poetry publish --build
-
-            - name: Build docs
-              run: |
-                  poetry run inv build-docs
-
-            - name: Deploy to docs branch
-              uses: peaceiris/actions-gh-pages@v3
-              with:
-                  github_token: ${{ secrets.GITHUB_TOKEN }}
-                  publish_branch: docs
-                  publish_dir: ./docs
