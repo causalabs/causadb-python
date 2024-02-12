@@ -4,26 +4,16 @@ import re
 
 
 @task
-def increment_version_number(c):
-    """
-    Increment the build number in _version.py by 1. Used for CI/CD.
-    """
-    # Task implementation goes here
-    from causadb._version import major, minor, patch
-    new_patch = patch + 1
+def sync_version_py(c):
+    # Set causadb.__version__ to the version in pyproject.toml
+    with open("pyproject.toml", "r") as f:
+        for line in f:
+            if "version" in line:
+                version = line.split("=")[1].strip().strip('"')
+                break
 
-    # Get SHA of commit and comment on the same line to trigger merge conflicts if necessary.
-    commit_sha = c.run("git rev-parse HEAD", hide=True).stdout.strip()
-
-    # Update build number in _version.py
-    with open("causadb/_version.py", "w") as f:
-        f.write("# Reset to -1 for new minor/major version\n")
-        f.write(f"major = {major}\n")
-        f.write(f"minor = {minor}\n")
-        f.write(f"patch = {new_patch}  # {commit_sha}\n")
-
-    # Use poetry version to update the version in pyproject.toml
-    c.run(f"poetry version {major}.{minor}.{new_patch}")
+    with open("causadb/__version__.py", "w") as f:
+        f.write(f"__version__ = '{version}'\n")
 
 
 def parse_markdown(file_path):
