@@ -32,6 +32,7 @@ def setup():
 
         # Save the token to ~/.causadb/config.toml. If the file doesn't exist, create it.
         dir_name = os.path.expanduser("~/.causadb")
+        os.makedirs(os.path.expanduser("~/.causadb"), exist_ok=True)
         config_filepath = os.path.join(dir_name, "config.toml")
 
         config = {}
