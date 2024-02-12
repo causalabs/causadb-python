@@ -1,13 +1,18 @@
 import pytest
+from dotenv import load_dotenv
+import os
 import causadb
 from causadb import CausaDB, Model, Data
-# Arbitrary test to check if the package is working
+
+load_dotenv()
+
+CAUSADB_TOKEN = os.getenv("CAUSADB_TOKEN")
 
 
 @pytest.fixture
 def client():
     client = CausaDB()
-    client.set_token("test-token-id", "test-token-secret")
+    client.set_token("test-token-id", CAUSADB_TOKEN)
     return client
 
 
@@ -22,7 +27,7 @@ def test_client_initialization(client):
     assert client is not None
 
     assert client.token_id == "test-token-id"
-    assert client.token_secret == "test-token-secret"
+    assert client.token_secret == CAUSADB_TOKEN
 
 
 def test_bad_tokens(client):
@@ -30,7 +35,7 @@ def test_bad_tokens(client):
     with pytest.raises(Exception):
         response = client.set_token("bad-token-id", "bad-token-secret")
     assert client.token_id == "test-token-id"
-    assert client.token_secret == "test-token-secret"
+    assert client.token_secret == CAUSADB_TOKEN
 
 
 def test_data_add(client):
