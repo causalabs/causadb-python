@@ -35,7 +35,7 @@ jobs:
                   poetry version patch
                   fi
 
-            - name: Increment version conditioned on whether
+            - name: Sync version to __version__.py
               run: |
                   poetry run inv sync-version-py
 
