@@ -1,14 +1,20 @@
-from typer.testing import CliRunner
 import time
+import os
+from dotenv import load_dotenv
 
+from typer.testing import CliRunner
 from causadb.cli.main import app
+
+load_dotenv()
+
+CAUSADB_TOKEN = os.getenv("CAUSADB_TOKEN")
 
 runner = CliRunner()
 
 
 def test_account_setup():
     result = runner.invoke(
-        app, ["account", "setup"], input="test-token-id\ntest-token-secret\n")
+        app, ["account", "setup"], input=f"test-token-id\n{CAUSADB_TOKEN}\n")
     assert result.exit_code == 0
     assert "Setup successful" in result.stdout
 
@@ -117,4 +123,4 @@ def test_account_remove():
 
     # Log back in
     result = runner.invoke(
-        app, ["account", "setup"], input="test-token-id\ntest-token-secret\n")
+        app, ["account", "setup"], input=f"test-token-id\n{CAUSADB_TOKEN}\n")
