@@ -120,6 +120,8 @@ def test_model_simulate_action(client):
     assert type(outcome) == dict
     assert outcome["ate"]["x"] == 1.0
     assert "ate_std" in outcome
+    outcome = model.simulate_action({"x": 0.5})
+    assert "do" in outcome
 
 
 def test_model_detach(client):
