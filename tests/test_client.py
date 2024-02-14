@@ -114,12 +114,21 @@ def test_model_train(client):
     assert model.status() == "trained"
 
 
-def test_model_simulate_action(client):
+def test_model_simulate_actions(client):
     model = client.get_model("test-model-12345")
-    outcome = model.simulate_action({"x": [0, 1]})
+    outcome = model.simulate_actions({"x": [0, 1]})
     assert type(outcome) == dict
     assert outcome["ate"]["x"] == 1.0
     assert "ate_std" in outcome
+    outcome = model.simulate_actions({"x": 0.5})
+    assert "do" in outcome
+
+
+def test_model_optimal_actions(client):
+    model = client.get_model("test-model-12345")
+    optimal_actions = model.optimal_actions({"x": 0.5}, ["y"], {"z": 0.5})
+    print("Optimal actions:", optimal_actions)
+    assert "y" in optimal_actions
 
 
 def test_model_detach(client):

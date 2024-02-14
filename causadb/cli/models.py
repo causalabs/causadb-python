@@ -267,7 +267,7 @@ def status(
 
 
 @app.command()
-def simulate_action(
+def simulate_actions(
     model_name: Annotated[str, typer.Option(
         "--model",
         help="The name of the model you wish to train.")] = None,
@@ -295,7 +295,7 @@ def simulate_action(
     action_config = json.load(open(action_config_filepath, "r"))
 
     data = requests.post(
-        f"{CAUSADB_URL}/models/{model_name}/simulate-action",
+        f"{CAUSADB_URL}/models/{model_name}/simulate-actions",
         headers=headers,
         json=action_config,
     ).json()
