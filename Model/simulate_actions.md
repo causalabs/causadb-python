@@ -1,7 +1,7 @@
-# Simulate Action
+# Simulate Actions
 
 ```python
-def simulate_action(action: dict) -> dict
+def simulate_actions(action: dict) -> dict
 ```
 
 Simulate an action on the model.
@@ -15,9 +15,5 @@ Simulate an action on the model.
 
 - `dict` - A dictionary representing the result of the action.
 
-<a id="causadb"></a>
-
-# causadb
-
-<a id="causadb.CausaDB"></a>
+<a id="model.Model.optimal_actions"></a>
 

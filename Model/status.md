@@ -10,5 +10,5 @@ Get the status of the model.
 
 - `str` - The status of the model.
 
-<a id="model.Model.simulate_action"></a>
+<a id="model.Model.simulate_actions"></a>
 
