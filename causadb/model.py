@@ -252,7 +252,7 @@ class Model:
 
         return model_status
 
-    def simulate_action(self, action: dict) -> dict:
+    def simulate_actions(self, action: dict) -> dict:
         """Simulate an action on the model.
 
         Args:
@@ -265,7 +265,7 @@ class Model:
 
         try:
             response = requests.post(
-                f"{CAUSADB_URL}/models/{self.model_name}/simulate-action",
+                f"{CAUSADB_URL}/models/{self.model_name}/simulate-actions",
                 headers=headers,
                 json=action,
             ).json()
@@ -274,6 +274,44 @@ class Model:
 
         if "outcome" in response:
             return response["outcome"]
+
+        raise Exception("CausaDB server request failed")
+
+    def optimal_actions(self, target_outcomes: dict[str, float], actionable_nodes: list[str], condition_nodes: dict[str, float] = {}) -> dict:
+        """Get the optimal actions for a given set of target outcomes.
+
+        Args:
+            target_outcomes (dict[str, float]): A dictionary of target outcomes.
+            actionable_nodes (list[str]): A list of actionable nodes.
+            condition_nodes (dict[str, float]): A dictionary of condition nodes.
+
+        Returns:
+            dict: A dictionary representing the optimal actions.
+
+        Example:
+            >>> model.optimal_actions(
+            ...     {"x": 0.5},
+            ...     ["y"],
+            ...     {"z": 0.5}
+            ... )
+        """
+        headers = {"token": self.client.token_secret}
+
+        try:
+            response = requests.post(
+                f"{CAUSADB_URL}/models/{self.model_name}/optimal-actions",
+                headers=headers,
+                json={
+                    "target_outcomes": target_outcomes,
+                    "actionable_nodes": actionable_nodes,
+                    "condition_nodes": condition_nodes
+                },
+            ).json()
+        except:
+            raise Exception("CausaDB server request failed")
+
+        if "optimal_actions" in response:
+            return response["optimal_actions"]
 
         raise Exception("CausaDB server request failed")
 
