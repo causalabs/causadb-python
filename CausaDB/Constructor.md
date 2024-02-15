@@ -10,15 +10,14 @@ CausaDB client class to interact with the CausaDB system.
 # Constructor
 
 ```python
-def __init__() -> None
+def __init__(custom_url=None) -> None
 ```
 
 Initializes the CausaDB client.
 
 **Arguments**:
 
-- `token_id` _str_ - Token ID provided by CausaDB.
-- `token_secret` _str_ - Token secret provided by CausaDB.
+- `custom_url` _str, optional_ - The URL of the CausaDB server. For custom deployments or development purposes. Defaults to None.
 
 <a id="causadb.CausaDB.set_token"></a>
 
