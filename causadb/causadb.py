@@ -15,15 +15,22 @@ class CausaDB:
     def __str__(self) -> str:
         return f"{self.token_id}"
 
-    def __init__(self) -> None:
+    def __init__(self, custom_url=None) -> None:
         """Initializes the CausaDB client.
 
         Args:
-            token_id (str): Token ID provided by CausaDB.
-            token_secret (str): Token secret provided by CausaDB.
+            custom_url (str, optional): The URL of the CausaDB server. For custom deployments or development purposes. Defaults to None.
         """
         self.token_id = None
         self.token_secret = None
+
+    def _set_url(self, url: str) -> None:
+        """Set the URL of the CausaDB server. For custom deployments or development purposes.
+
+        Args:
+            url (str): The URL of the CausaDB server.
+        """
+        os.environ["CAUSADB_URL"] = url
 
     def set_token(self, token_id: str, token_secret: str) -> bool:
         """Set the token for the CausaDB client.
