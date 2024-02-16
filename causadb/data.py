@@ -1,6 +1,6 @@
 import requests
 import pandas as pd
-from .utils import CAUSADB_URL
+from .utils import get_causadb_url
 
 
 class Data:
@@ -22,7 +22,7 @@ class Data:
         headers = {"token": self.client.token_secret}
         try:
             requests.delete(
-                f"{CAUSADB_URL}/data/{self.data_name}",
+                f"{get_causadb_url()}/data/{self.data_name}",
                 headers=headers,
             )
         except:
@@ -49,7 +49,7 @@ class Data:
         try:
             headers = {"token": self.client.token_secret}
             response = requests.post(
-                f"{CAUSADB_URL}/data/{self.data_name}",
+                f"{get_causadb_url()}/data/{self.data_name}",
                 headers=headers,
                 json=data,
             ).json()

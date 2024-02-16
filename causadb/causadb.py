@@ -2,7 +2,7 @@ import requests
 import os
 from .data import Data
 from .model import Model
-from .utils import CAUSADB_URL
+from .utils import get_causadb_url, set_causadb_url
 
 
 class CausaDB:
@@ -23,14 +23,8 @@ class CausaDB:
         """
         self.token_id = None
         self.token_secret = None
-
-    def _set_url(self, url: str) -> None:
-        """Set the URL of the CausaDB server. For custom deployments or development purposes.
-
-        Args:
-            url (str): The URL of the CausaDB server.
-        """
-        os.environ["CAUSADB_URL"] = url
+        if custom_url is not None:
+            set_causadb_url(custom_url)
 
     def set_token(self, token_id: str, token_secret: str) -> bool:
         """Set the token for the CausaDB client.
@@ -46,7 +40,7 @@ class CausaDB:
         # Verify that the tokens are correct
         headers = {"token": token_secret}
         response = requests.get(
-            f"{CAUSADB_URL}/account",
+            f"{get_causadb_url()}/account",
             headers=headers
         )
 
@@ -92,7 +86,7 @@ class CausaDB:
 
         try:
             response = requests.get(
-                f"{CAUSADB_URL}/models/{model_name}", headers=headers
+                f"{get_causadb_url()}/models/{model_name}", headers=headers
             ).json()
         except:
             raise Exception("CausaDB server request failed")
@@ -112,7 +106,7 @@ class CausaDB:
 
         try:
             response = requests.get(
-                f"{CAUSADB_URL}/models", headers=headers
+                f"{get_causadb_url()}/models", headers=headers
             ).json()
         except:
             raise Exception("CausaDB server request failed")
@@ -136,7 +130,7 @@ class CausaDB:
         headers = {"token": self.token_secret}
         try:
             response = requests.get(
-                f"{CAUSADB_URL}/data/{data_name}", headers=headers
+                f"{get_causadb_url()}/data/{data_name}", headers=headers
             ).json()
         except:
             raise Exception("CausaDB server request failed")
@@ -155,7 +149,7 @@ class CausaDB:
 
         try:
             response = requests.get(
-                f"{CAUSADB_URL}/data", headers=headers
+                f"{get_causadb_url()}/data", headers=headers
             ).json()
         except:
             raise Exception("CausaDB client failed to connect to server")

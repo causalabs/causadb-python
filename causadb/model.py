@@ -2,7 +2,7 @@ import requests
 import time
 import pandas as pd
 
-from .utils import CAUSADB_URL
+from .utils import get_causadb_url
 
 
 class Model:
@@ -20,7 +20,7 @@ class Model:
         # Pull config from the server
         headers = {"token": self.client.token_secret}
         response = requests.get(
-            f"{CAUSADB_URL}/models/{self.model_name}",
+            f"{get_causadb_url()}/models/{self.model_name}",
             headers=headers,
         ).json()
 
@@ -37,7 +37,7 @@ class Model:
         headers = {"token": self.client.token_secret}
         try:
             requests.delete(
-                f"{CAUSADB_URL}/models/{self.model_name}",
+                f"{get_causadb_url()}/models/{self.model_name}",
                 headers=headers,
             )
         except:
@@ -56,7 +56,7 @@ class Model:
 
         try:
             response = requests.get(
-                f"{CAUSADB_URL}/models/{self.model_name}", headers=headers
+                f"{get_causadb_url()}/models/{self.model_name}", headers=headers
             ).json()
         except:
             raise Exception("CausaDB server request failed")
@@ -76,7 +76,7 @@ class Model:
 
         try:
             response = requests.get(
-                f"{CAUSADB_URL}/models/{self.model_name}", headers=headers
+                f"{get_causadb_url()}/models/{self.model_name}", headers=headers
             ).json()
         except:
             raise Exception("CausaDB server request failed")
@@ -99,7 +99,7 @@ class Model:
 
         try:
             response = requests.get(
-                f"{CAUSADB_URL}/models/{self.model_name}", headers=headers
+                f"{get_causadb_url()}/models/{self.model_name}", headers=headers
             ).json()
         except:
             raise Exception("CausaDB server request failed")
@@ -119,7 +119,7 @@ class Model:
 
         try:
             response = requests.get(
-                f"{CAUSADB_URL}/models/{self.model_name}", headers=headers
+                f"{get_causadb_url()}/models/{self.model_name}", headers=headers
             ).json()
         except:
             raise Exception("CausaDB server request failed")
@@ -143,7 +143,7 @@ class Model:
 
         try:
             response = requests.get(
-                f"{CAUSADB_URL}/models/{self.model_name}", headers=headers
+                f"{get_causadb_url()}/models/{self.model_name}", headers=headers
             ).json()
         except:
             raise Exception("CausaDB server request failed")
@@ -163,7 +163,7 @@ class Model:
 
         try:
             response = requests.get(
-                f"{CAUSADB_URL}/models/{self.model_name}", headers=headers
+                f"{get_causadb_url()}/models/{self.model_name}", headers=headers
             ).json()
         except:
             raise Exception("CausaDB server request failed")
@@ -180,7 +180,7 @@ class Model:
 
         try:
             response = requests.post(
-                f"{CAUSADB_URL}/models/{self.model_name}/attach/{data_name}",
+                f"{get_causadb_url()}/models/{self.model_name}/attach/{data_name}",
                 headers=headers
             ).json()
         except:
@@ -196,7 +196,7 @@ class Model:
 
         try:
             response = requests.delete(
-                f"{CAUSADB_URL}/models/{self.model_name}/detach",
+                f"{get_causadb_url()}/models/{self.model_name}/detach",
                 headers=headers
             ).json()
         except:
@@ -216,7 +216,7 @@ class Model:
 
         try:
             response = requests.post(
-                f"{CAUSADB_URL}/models/{self.model_name}/train",
+                f"{get_causadb_url()}/models/{self.model_name}/train",
                 headers=headers
             )
         except:
@@ -242,7 +242,7 @@ class Model:
 
         try:
             response = requests.get(
-                f"{CAUSADB_URL}/models/{self.model_name}",
+                f"{get_causadb_url()}/models/{self.model_name}",
                 headers=headers,
             ).json()
         except:
@@ -265,7 +265,7 @@ class Model:
 
         try:
             response = requests.post(
-                f"{CAUSADB_URL}/models/{self.model_name}/simulate-actions",
+                f"{get_causadb_url()}/models/{self.model_name}/simulate-actions",
                 headers=headers,
                 json=action,
             ).json()
@@ -299,7 +299,7 @@ class Model:
 
         try:
             response = requests.post(
-                f"{CAUSADB_URL}/models/{self.model_name}/optimal-actions",
+                f"{get_causadb_url()}/models/{self.model_name}/optimal-actions",
                 headers=headers,
                 json={
                     "target_outcomes": target_outcomes,
@@ -321,7 +321,7 @@ class Model:
 
         try:
             response = requests.post(
-                f"{CAUSADB_URL}/models/{self.model_name}",
+                f"{get_causadb_url()}/models/{self.model_name}",
                 headers=headers,
                 json=self.config
             ).json()
