@@ -202,12 +202,13 @@ class Model:
         except:
             raise Exception("CausaDB server request failed")
 
-    def train(self, wait=True, poll_interval=0.2) -> None:
+    def train(self, wait: bool = True, poll_interval: float = 0.2, poll_limit: float = 30) -> None:
         """Train the model.
 
         Args:
             wait (bool): Whether to wait for the model to finish training.
             poll_interval (float): The interval at which to poll the server for the model status.
+            poll_limit (float): The maximum time to wait for the model to finish training.
 
         Example:
             >>> model.train()
@@ -228,9 +229,13 @@ class Model:
         response = response.json()
 
         if wait:
+            time_elapsed = 0
             while self.status() != "trained":
-                # Try again in 200ms
                 time.sleep(poll_interval)
+                # If the model takes too long to train, raise an exception
+                time_elapsed += poll_interval
+                if time_elapsed > poll_limit:
+                    raise Exception("Model training took too long")
 
     def status(self) -> str:
         """Get the status of the model.
