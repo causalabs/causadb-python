@@ -1,6 +1,8 @@
 import requests
 import time
 import pandas as pd
+import numpy as np
+from typing import Union
 
 from .utils import get_causadb_url
 
@@ -276,7 +278,7 @@ class Model:
         """
         headers = {"token": self.client.token_secret}
 
-        args = {
+        query = {
             "actions": actions,
             "fixed": fixed,
             "interval": interval,
@@ -287,7 +289,7 @@ class Model:
             response = requests.post(
                 f"{get_causadb_url()}/models/{self.model_name}/simulate-actions",
                 headers=headers,
-                json=args,
+                json=query,
             ).json()
         except:
             raise Exception("CausaDB server request failed")
@@ -299,6 +301,47 @@ class Model:
                 "lower": pd.DataFrame.from_dict(outcome["lower"]),
                 "upper": pd.DataFrame.from_dict(outcome["upper"])
             }
+
+        raise Exception("CausaDB server request failed")
+
+    def causal_effects(self, actions: Union[str, dict[str, tuple[np.ndarray, np.ndarray]]], fixed: dict[str, np.ndarray] = None, interval: float = 0.90, observation_noise=False) -> pd.DataFrame:
+        """ Get the causal effects of actions on the model.
+
+        Args:
+            actions (Union[str, dict[str, tuple[np.ndarray, np.ndarray]]]): A dictionary representing the actions.
+            fixed (dict): A dictionary representing the fixed nodes.
+            interval (float): The interval at which to simulate the action.
+            observation_noise (bool): Whether to include observation noise.
+
+        Returns:
+            pd.DataFrame: A dataframe representing the causal effects of the actions.
+
+        Example:
+            >>> model.causal_effects(
+            ...     {"x": [0, 1]}
+            ... )
+
+        """
+        headers = {"token": self.client.token_secret}
+
+        query = {
+            "actions": actions,
+            "fixed": fixed,
+            "interval": interval,
+            "observation_noise": observation_noise
+        }
+
+        try:
+            response = requests.post(
+                f"{get_causadb_url()}/models/{self.model_name}/causal-effects",
+                headers=headers,
+                json=query,
+            ).json()
+        except:
+            raise Exception("CausaDB server request failed")
+
+        if "outcome" in response:
+            return pd.DataFrame.from_dict(response["outcome"])
 
         raise Exception("CausaDB server request failed")
 
@@ -321,15 +364,17 @@ class Model:
         """
         headers = {"token": self.client.token_secret}
 
+        query = {
+            "targets": targets,
+            "actionable": actionable,
+            "fixed": fixed
+        }
+
         try:
             response = requests.post(
                 f"{get_causadb_url()}/models/{self.model_name}/find-best-actions",
                 headers=headers,
-                json={
-                    "targets": targets,
-                    "actionable": actionable,
-                    "fixed": fixed
-                },
+                json=query,
             ).json()
         except:
             raise Exception("CausaDB server request failed")

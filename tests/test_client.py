@@ -129,6 +129,12 @@ def test_model_find_best_actions(client):
     assert "y" in best_actions
 
 
+def test_model_causal_effects(client):
+    model = client.get_model("test-model-12345")
+    causal_effects = model.causal_effects("x")
+    print("Causal effects:", causal_effects)
+
+
 def test_model_detach(client):
     model = client.get_model("test-model-12345")
     model.detach("test-data-2")
