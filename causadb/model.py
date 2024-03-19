@@ -302,13 +302,13 @@ class Model:
 
         raise Exception("CausaDB server request failed")
 
-    def optimal_actions(self, target_outcomes: dict[str, float], actionable_nodes: list[str], condition_nodes: dict[str, float] = {}) -> dict:
+    def find_best_actions(self, targets: dict[str, float], actionable: list[str], fixed: dict[str, float] = {}) -> dict:
         """Get the optimal actions for a given set of target outcomes.
 
         Args:
-            target_outcomes (dict[str, float]): A dictionary of target outcomes.
-            actionable_nodes (list[str]): A list of actionable nodes.
-            condition_nodes (dict[str, float]): A dictionary of condition nodes.
+            targets (dict[str, float]): A dictionary representing the target outcomes.
+            actionable (list[str]): A list of actionable nodes.
+            fixed (dict[str, float]): A dictionary representing the fixed nodes.
 
         Returns:
             dict: A dictionary representing the optimal actions.
@@ -316,27 +316,26 @@ class Model:
         Example:
             >>> model.optimal_actions(
             ...     {"x": 0.5},
-            ...     ["y"],
-            ...     {"z": 0.5}
-            ... )
+            ...     ["x"],
+            ...     {"y": 0.5}
         """
         headers = {"token": self.client.token_secret}
 
         try:
             response = requests.post(
-                f"{get_causadb_url()}/models/{self.model_name}/optimal-actions",
+                f"{get_causadb_url()}/models/{self.model_name}/find-best-actions",
                 headers=headers,
                 json={
-                    "target_outcomes": target_outcomes,
-                    "actionable_nodes": actionable_nodes,
-                    "condition_nodes": condition_nodes
+                    "targets": targets,
+                    "actionable": actionable,
+                    "fixed": fixed
                 },
             ).json()
         except:
             raise Exception("CausaDB server request failed")
 
-        if "optimal_actions" in response:
-            return response["optimal_actions"]
+        if "best_actions" in response:
+            return pd.DataFrame.from_dict(response["best_actions"])
 
         raise Exception("CausaDB server request failed")
 
@@ -345,7 +344,7 @@ class Model:
         headers = {"token": self.client.token_secret}
 
         try:
-            response = requests.post(
+            requests.post(
                 f"{get_causadb_url()}/models/{self.model_name}",
                 headers=headers,
                 json=self.config

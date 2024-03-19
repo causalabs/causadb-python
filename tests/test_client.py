@@ -118,17 +118,15 @@ def test_model_simulate_actions(client):
     model = client.get_model("test-model-12345")
     outcome = model.simulate_actions({"x": [0, 1]})
     assert type(outcome) == dict
-    # Should contain "median", "lower", "upper" keys
     assert "median" in outcome
     assert "lower" in outcome
     assert "upper" in outcome
 
 
-def test_model_optimal_actions(client):
+def test_model_find_best_actions(client):
     model = client.get_model("test-model-12345")
-    optimal_actions = model.optimal_actions({"x": 0.5}, ["y"], {"z": 0.5})
-    print("Optimal actions:", optimal_actions)
-    assert "y" in optimal_actions
+    best_actions = model.find_best_actions({"x": 0.5}, ["y"], {"z": 0.5})
+    assert "y" in best_actions
 
 
 def test_model_detach(client):
