@@ -1,6 +1,8 @@
 import requests
 import time
 import pandas as pd
+import numpy as np
+from typing import Union
 
 from .utils import get_causadb_url
 
@@ -202,12 +204,13 @@ class Model:
         except:
             raise Exception("CausaDB server request failed")
 
-    def train(self, wait=True, poll_interval=0.2) -> None:
+    def train(self, wait: bool = True, poll_interval: float = 0.2, poll_limit: float = 30) -> None:
         """Train the model.
 
         Args:
             wait (bool): Whether to wait for the model to finish training.
             poll_interval (float): The interval at which to poll the server for the model status.
+            poll_limit (float): The maximum time to wait for the model to finish training.
 
         Example:
             >>> model.train()
@@ -228,9 +231,13 @@ class Model:
         response = response.json()
 
         if wait:
+            time_elapsed = 0
             while self.status() != "trained":
-                # Try again in 200ms
                 time.sleep(poll_interval)
+                # If the model takes too long to train, raise an exception
+                time_elapsed += poll_interval
+                if time_elapsed > poll_limit:
+                    raise Exception("Model training took too long")
 
     def status(self) -> str:
         """Get the status of the model.
@@ -252,38 +259,99 @@ class Model:
 
         return model_status
 
-    def simulate_actions(self, action: dict) -> dict:
+    def simulate_actions(self, actions: dict, fixed: dict = {}, interval: float = 0.9, observation_noise: bool = False) -> dict:
         """Simulate an action on the model.
 
         Args:
-            action (dict): A dictionary representing the action.
+            actions (dict): A dictionary representing the actions.
+            fixed (dict): A dictionary representing the fixed nodes.
+            interval (float): The interval at which to simulate the action.
+            observation_noise (bool): Whether to include observation noise.
 
         Returns:
             dict: A dictionary representing the result of the action.
+
+        Example:
+            >>> model.simulate_actions(
+            ...     {"x": [0, 1]}
+            ... )
         """
         headers = {"token": self.client.token_secret}
+
+        query = {
+            "actions": actions,
+            "fixed": fixed,
+            "interval": interval,
+            "observation_noise": observation_noise
+        }
 
         try:
             response = requests.post(
                 f"{get_causadb_url()}/models/{self.model_name}/simulate-actions",
                 headers=headers,
-                json=action,
+                json=query,
             ).json()
         except:
             raise Exception("CausaDB server request failed")
 
         if "outcome" in response:
-            return response["outcome"]
+            outcome = response["outcome"]
+            return {
+                "median": pd.DataFrame.from_dict(outcome["median"]),
+                "lower": pd.DataFrame.from_dict(outcome["lower"]),
+                "upper": pd.DataFrame.from_dict(outcome["upper"])
+            }
 
         raise Exception("CausaDB server request failed")
 
-    def optimal_actions(self, target_outcomes: dict[str, float], actionable_nodes: list[str], condition_nodes: dict[str, float] = {}) -> dict:
+    def causal_effects(self, actions: Union[str, dict[str, tuple[np.ndarray, np.ndarray]]], fixed: dict[str, np.ndarray] = None, interval: float = 0.90, observation_noise=False) -> pd.DataFrame:
+        """ Get the causal effects of actions on the model.
+
+        Args:
+            actions (Union[str, dict[str, tuple[np.ndarray, np.ndarray]]]): A dictionary representing the actions.
+            fixed (dict): A dictionary representing the fixed nodes.
+            interval (float): The interval at which to simulate the action.
+            observation_noise (bool): Whether to include observation noise.
+
+        Returns:
+            pd.DataFrame: A dataframe representing the causal effects of the actions.
+
+        Example:
+            >>> model.causal_effects(
+            ...     {"x": [0, 1]}
+            ... )
+
+        """
+        headers = {"token": self.client.token_secret}
+
+        query = {
+            "actions": actions,
+            "fixed": fixed,
+            "interval": interval,
+            "observation_noise": observation_noise
+        }
+
+        try:
+            response = requests.post(
+                f"{get_causadb_url()}/models/{self.model_name}/causal-effects",
+                headers=headers,
+                json=query,
+            ).json()
+        except:
+            raise Exception("CausaDB server request failed")
+
+        if "outcome" in response:
+            return pd.DataFrame.from_dict(response["outcome"])
+
+        raise Exception("CausaDB server request failed")
+
+    def find_best_actions(self, targets: dict[str, float], actionable: list[str], fixed: dict[str, float] = {}) -> dict:
         """Get the optimal actions for a given set of target outcomes.
 
         Args:
-            target_outcomes (dict[str, float]): A dictionary of target outcomes.
-            actionable_nodes (list[str]): A list of actionable nodes.
-            condition_nodes (dict[str, float]): A dictionary of condition nodes.
+            targets (dict[str, float]): A dictionary representing the target outcomes.
+            actionable (list[str]): A list of actionable nodes.
+            fixed (dict[str, float]): A dictionary representing the fixed nodes.
 
         Returns:
             dict: A dictionary representing the optimal actions.
@@ -291,27 +359,62 @@ class Model:
         Example:
             >>> model.optimal_actions(
             ...     {"x": 0.5},
-            ...     ["y"],
-            ...     {"z": 0.5}
-            ... )
+            ...     ["x"],
+            ...     {"y": 0.5}
         """
         headers = {"token": self.client.token_secret}
 
+        query = {
+            "targets": targets,
+            "actionable": actionable,
+            "fixed": fixed
+        }
+
         try:
             response = requests.post(
-                f"{get_causadb_url()}/models/{self.model_name}/optimal-actions",
+                f"{get_causadb_url()}/models/{self.model_name}/find-best-actions",
                 headers=headers,
-                json={
-                    "target_outcomes": target_outcomes,
-                    "actionable_nodes": actionable_nodes,
-                    "condition_nodes": condition_nodes
-                },
+                json=query,
             ).json()
         except:
             raise Exception("CausaDB server request failed")
 
-        if "optimal_actions" in response:
-            return response["optimal_actions"]
+        if "best_actions" in response:
+            return pd.DataFrame.from_dict(response["best_actions"])
+
+        raise Exception("CausaDB server request failed")
+
+    def causal_attributions(self, outcome: str, normalise: bool = False) -> pd.DataFrame:
+        """Get the causal attributions for an outcome.
+
+        Args:
+            outcome (str): The outcome node.
+            normalise (bool): Whether to normalise the causal attributions.
+
+        Returns:
+            pd.DataFrame: A dataframe representing the causal attributions of the outcome.
+
+        Example:
+            >>> model.causal_attributions("y")
+        """
+        headers = {"token": self.client.token_secret}
+
+        query = {
+            "outcome": outcome,
+            "normalise": normalise
+        }
+
+        try:
+            response = requests.post(
+                f"{get_causadb_url()}/models/{self.model_name}/causal-attributions",
+                headers=headers,
+                json=query,
+            ).json()
+        except:
+            raise Exception("CausaDB server request failed")
+
+        if "outcome" in response:
+            return pd.DataFrame.from_dict(response["outcome"])
 
         raise Exception("CausaDB server request failed")
 
@@ -320,7 +423,7 @@ class Model:
         headers = {"token": self.client.token_secret}
 
         try:
-            response = requests.post(
+            requests.post(
                 f"{get_causadb_url()}/models/{self.model_name}",
                 headers=headers,
                 json=self.config
