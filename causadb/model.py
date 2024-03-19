@@ -384,6 +384,40 @@ class Model:
 
         raise Exception("CausaDB server request failed")
 
+    def causal_attributions(self, outcome: str, normalise: bool = False) -> pd.DataFrame:
+        """Get the causal attributions for an outcome.
+
+        Args:
+            outcome (str): The outcome node.
+            normalise (bool): Whether to normalise the causal attributions.
+
+        Returns:
+            pd.DataFrame: A dataframe representing the causal attributions of the outcome.
+
+        Example:
+            >>> model.causal_attributions("y")
+        """
+        headers = {"token": self.client.token_secret}
+
+        query = {
+            "outcome": outcome,
+            "normalise": normalise
+        }
+
+        try:
+            response = requests.post(
+                f"{get_causadb_url()}/models/{self.model_name}/causal-attributions",
+                headers=headers,
+                json=query,
+            ).json()
+        except:
+            raise Exception("CausaDB server request failed")
+
+        if "outcome" in response:
+            return pd.DataFrame.from_dict(response["outcome"])
+
+        raise Exception("CausaDB server request failed")
+
     def _update(self) -> None:
         """Pushes the current state of the model to the CausaDB server."""
         headers = {"token": self.client.token_secret}
