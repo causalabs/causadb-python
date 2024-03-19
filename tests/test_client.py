@@ -110,7 +110,7 @@ def test_set_node_types(client):
 
 def test_model_train(client):
     model = client.get_model("test-model-12345")
-    model.train()
+    model.train(poll_limit=2)
     assert model.status() == "trained"
 
 
@@ -118,10 +118,10 @@ def test_model_simulate_actions(client):
     model = client.get_model("test-model-12345")
     outcome = model.simulate_actions({"x": [0, 1]})
     assert type(outcome) == dict
-    assert outcome["ate"]["x"] == 1.0
-    assert "ate_std" in outcome
-    outcome = model.simulate_actions({"x": 0.5})
-    assert "do" in outcome
+    # Should contain "median", "lower", "upper" keys
+    assert "median" in outcome
+    assert "lower" in outcome
+    assert "upper" in outcome
 
 
 def test_model_optimal_actions(client):

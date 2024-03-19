@@ -257,28 +257,48 @@ class Model:
 
         return model_status
 
-    def simulate_actions(self, action: dict) -> dict:
+    def simulate_actions(self, actions: dict, fixed: dict = {}, interval: float = 0.9, observation_noise: bool = False) -> dict:
         """Simulate an action on the model.
 
         Args:
-            action (dict): A dictionary representing the action.
+            actions (dict): A dictionary representing the actions.
+            fixed (dict): A dictionary representing the fixed nodes.
+            interval (float): The interval at which to simulate the action.
+            observation_noise (bool): Whether to include observation noise.
 
         Returns:
             dict: A dictionary representing the result of the action.
+
+        Example:
+            >>> model.simulate_actions(
+            ...     {"x": [0, 1]}
+            ... )
         """
         headers = {"token": self.client.token_secret}
+
+        args = {
+            "actions": actions,
+            "fixed": fixed,
+            "interval": interval,
+            "observation_noise": observation_noise
+        }
 
         try:
             response = requests.post(
                 f"{get_causadb_url()}/models/{self.model_name}/simulate-actions",
                 headers=headers,
-                json=action,
+                json=args,
             ).json()
         except:
             raise Exception("CausaDB server request failed")
 
         if "outcome" in response:
-            return response["outcome"]
+            outcome = response["outcome"]
+            return {
+                "median": pd.DataFrame.from_dict(outcome["median"]),
+                "lower": pd.DataFrame.from_dict(outcome["lower"]),
+                "upper": pd.DataFrame.from_dict(outcome["upper"])
+            }
 
         raise Exception("CausaDB server request failed")
 
