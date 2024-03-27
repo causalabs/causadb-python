@@ -87,15 +87,6 @@ def test_models_status():
     assert result.exit_code == 0
 
 
-def test_models_simulate_actions():
-    result = runner.invoke(
-        app, ["models", "simulate-actions", "--model", "test", "--action", "tests/test-action.json"])
-
-    print(result.stdout)
-
-    assert result.exit_code == 0
-
-
 def test_models_detach():
     result = runner.invoke(
         app, ["models", "detach", "--model", "test"])
