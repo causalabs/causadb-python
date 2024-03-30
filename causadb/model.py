@@ -204,7 +204,7 @@ class Model:
         except:
             raise Exception("CausaDB server request failed")
 
-    def train(self, wait: bool = True, poll_interval: float = 0.2, poll_limit: float = 30.0, verbose: bool = False, progress_interval: float = 1.0) -> None:
+    def train(self, data_name: str = None, wait: bool = True, poll_interval: float = 0.2, poll_limit: float = 30.0, verbose: bool = False, progress_interval: float = 1.0) -> None:
         """Train the model.
 
         Args:
@@ -217,6 +217,11 @@ class Model:
         Example:
             >>> model.train()
         """
+
+        # If data_name is provided, attach the data to the model
+        if data_name:
+            self.attach(data_name)
+
         headers = {"token": self.client.token}
 
         try:
@@ -235,7 +240,8 @@ class Model:
         if wait:
             time_elapsed = 0
             last_progress = 0
-            print(f"Training model...")
+            if verbose:
+                print(f"Training model...")
             while self.status() != "trained":
                 time.sleep(poll_interval)
                 time_elapsed += poll_interval
