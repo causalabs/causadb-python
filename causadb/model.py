@@ -204,13 +204,15 @@ class Model:
         except:
             raise Exception("CausaDB server request failed")
 
-    def train(self, wait: bool = True, poll_interval: float = 0.2, poll_limit: float = 30) -> None:
+    def train(self, wait: bool = True, poll_interval: float = 0.2, poll_limit: float = 30.0, verbose: bool = False, progress_interval: float = 1.0) -> None:
         """Train the model.
 
         Args:
             wait (bool): Whether to wait for the model to finish training.
             poll_interval (float): The interval at which to poll the server for the model status.
             poll_limit (float): The maximum time to wait for the model to finish training.
+            verbose (bool): Whether to display model progress.
+            progress_interval (float): The interval at which to display the model progress.
 
         Example:
             >>> model.train()
@@ -232,12 +234,21 @@ class Model:
 
         if wait:
             time_elapsed = 0
+            last_progress = 0
+            print(f"Training model...")
             while self.status() != "trained":
                 time.sleep(poll_interval)
-                # If the model takes too long to train, raise an exception
                 time_elapsed += poll_interval
+
+                if verbose and time_elapsed - last_progress >= progress_interval:
+                    # Display model training time elapsed time_elapsed
+                    print(f"Training model... ({round(time_elapsed)}s)")
+                    last_progress = time_elapsed
+
                 if time_elapsed > poll_limit:
                     raise Exception("Model training took too long")
+            if verbose:
+                print(f"Model training progress: {self.status()}")
 
     def status(self) -> str:
         """Get the status of the model.
