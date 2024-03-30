@@ -1,20 +1,19 @@
 # Set Token
 
 ```python
-def set_token(token_id: str, token_secret: str) -> bool
+def set_token(token: str) -> None
 ```
 
 Set the token for the CausaDB client.
 
 **Arguments**:
 
-- `token_id` _str_ - Token ID provided by CausaDB.
-- `token_secret` _str_ - Token secret provided by CausaDB.
+- `token` _str_ - Token secret provided by CausaDB.
   
 
-**Returns**:
+**Raises**:
 
-- `bool` - True if the token is valid, False otherwise.
+- `Exception` - If the token is invalid.
 
 <a id="causadb.CausaDB.create_model"></a>
 

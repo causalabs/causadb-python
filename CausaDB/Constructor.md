@@ -10,7 +10,7 @@ CausaDB client class to interact with the CausaDB system.
 # Constructor
 
 ```python
-def __init__(custom_url=None) -> None
+def __init__(token: str = None, custom_url: str = None) -> None
 ```
 
 Initializes the CausaDB client.
