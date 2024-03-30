@@ -12,7 +12,7 @@ CAUSADB_TOKEN = os.getenv("CAUSADB_TOKEN")
 @pytest.fixture
 def client():
     client = CausaDB()
-    client.set_token("test-token-id", CAUSADB_TOKEN)
+    client.set_token(CAUSADB_TOKEN)
     return client
 
 
