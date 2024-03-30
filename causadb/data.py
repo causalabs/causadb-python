@@ -38,6 +38,24 @@ class Data:
 
         self._update(dataset)
 
+    def from_pandas(self, dataframe: pd.DataFrame) -> None:
+        """Add data from a pandas DataFrame.
+
+        Args:
+            dataframe (pd.DataFrame): The pandas DataFrame.
+        """
+        dataset = dataframe.to_dict()
+
+        self._update(dataset)
+
+    def from_dict(self, data: dict) -> None:
+        """Add data from a dictionary.
+
+        Args:
+            data (dict): The data dictionary.
+        """
+        self._update(data)
+
     def _update(self, data: dict) -> None:
         """Pushes the data to the CausaDB server.
 
