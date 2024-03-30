@@ -26,16 +26,14 @@ def test_client_initialization(client):
     # Check that the client is initialized
     assert client is not None
 
-    assert client.token_id == "test-token-id"
-    assert client.token_secret == CAUSADB_TOKEN
+    assert client.token == CAUSADB_TOKEN
 
 
 def test_bad_tokens(client):
     # Check that bad tokens are rejected
     with pytest.raises(Exception):
         response = client.set_token("bad-token-id", "bad-token-secret")
-    assert client.token_id == "test-token-id"
-    assert client.token_secret == CAUSADB_TOKEN
+    assert client.token == CAUSADB_TOKEN
 
 
 def test_data_add(client):
