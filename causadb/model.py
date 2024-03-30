@@ -20,7 +20,7 @@ class Model:
         self.config = {}
 
         # Pull config from the server
-        headers = {"token": self.client.token_secret}
+        headers = {"token": self.client.token}
         response = requests.get(
             f"{get_causadb_url()}/models/{self.model_name}",
             headers=headers,
@@ -36,7 +36,7 @@ class Model:
 
     def remove(self) -> None:
         """Remove the model from the CausaDB system."""
-        headers = {"token": self.client.token_secret}
+        headers = {"token": self.client.token}
         try:
             requests.delete(
                 f"{get_causadb_url()}/models/{self.model_name}",
@@ -54,7 +54,7 @@ class Model:
         Example:
             >>> model.set_nodes(["x", "y", "z"])
         """
-        headers = {"token": self.client.token_secret}
+        headers = {"token": self.client.token}
 
         try:
             response = requests.get(
@@ -74,7 +74,7 @@ class Model:
         Returns:
             list[str]: A list of node names.
         """
-        headers = {"token": self.client.token_secret}
+        headers = {"token": self.client.token}
 
         try:
             response = requests.get(
@@ -97,7 +97,7 @@ class Model:
             ...     ("Weight", "BMI"),
             ... ])
         """
-        headers = {"token": self.client.token_secret}
+        headers = {"token": self.client.token}
 
         try:
             response = requests.get(
@@ -117,7 +117,7 @@ class Model:
         Returns:
             list[tuple[str, str]]: A list of tuples representing edges.
         """
-        headers = {"token": self.client.token_secret}
+        headers = {"token": self.client.token}
 
         try:
             response = requests.get(
@@ -141,7 +141,7 @@ class Model:
             ...     "x1": {"type": "seasonal", "min": 0, "max": 1}
             ... })
         """
-        headers = {"token": self.client.token_secret}
+        headers = {"token": self.client.token}
 
         try:
             response = requests.get(
@@ -161,7 +161,7 @@ class Model:
         Returns:
             dict: A dictionary of node types.
         """
-        headers = {"token": self.client.token_secret}
+        headers = {"token": self.client.token}
 
         try:
             response = requests.get(
@@ -178,7 +178,7 @@ class Model:
         Args:
             data_name (str): The name of the data to attach.
         """
-        headers = {"token": self.client.token_secret}
+        headers = {"token": self.client.token}
 
         try:
             response = requests.post(
@@ -194,7 +194,7 @@ class Model:
         Args:
             data_name (str): The name of the data to detach.
         """
-        headers = {"token": self.client.token_secret}
+        headers = {"token": self.client.token}
 
         try:
             response = requests.delete(
@@ -204,18 +204,25 @@ class Model:
         except:
             raise Exception("CausaDB server request failed")
 
-    def train(self, wait: bool = True, poll_interval: float = 0.2, poll_limit: float = 30) -> None:
+    def train(self, data_name: str = None, wait: bool = True, poll_interval: float = 0.2, poll_limit: float = 30.0, verbose: bool = False, progress_interval: float = 1.0) -> None:
         """Train the model.
 
         Args:
             wait (bool): Whether to wait for the model to finish training.
             poll_interval (float): The interval at which to poll the server for the model status.
             poll_limit (float): The maximum time to wait for the model to finish training.
+            verbose (bool): Whether to display model progress.
+            progress_interval (float): The interval at which to display the model progress.
 
         Example:
             >>> model.train()
         """
-        headers = {"token": self.client.token_secret}
+
+        # If data_name is provided, attach the data to the model
+        if data_name:
+            self.attach(data_name)
+
+        headers = {"token": self.client.token}
 
         try:
             response = requests.post(
@@ -232,12 +239,22 @@ class Model:
 
         if wait:
             time_elapsed = 0
+            last_progress = 0
+            if verbose:
+                print(f"Training model...")
             while self.status() != "trained":
                 time.sleep(poll_interval)
-                # If the model takes too long to train, raise an exception
                 time_elapsed += poll_interval
+
+                if verbose and time_elapsed - last_progress >= progress_interval:
+                    # Display model training time elapsed time_elapsed
+                    print(f"Training model... ({round(time_elapsed)}s)")
+                    last_progress = time_elapsed
+
                 if time_elapsed > poll_limit:
                     raise Exception("Model training took too long")
+            if verbose:
+                print(f"Model training progress: {self.status()}")
 
     def status(self) -> str:
         """Get the status of the model.
@@ -245,7 +262,7 @@ class Model:
         Returns:
             str: The status of the model.
         """
-        headers = {"token": self.client.token_secret}
+        headers = {"token": self.client.token}
 
         try:
             response = requests.get(
@@ -276,7 +293,7 @@ class Model:
             ...     {"x": [0, 1]}
             ... )
         """
-        headers = {"token": self.client.token_secret}
+        headers = {"token": self.client.token}
 
         query = {
             "actions": actions,
@@ -322,7 +339,7 @@ class Model:
             ... )
 
         """
-        headers = {"token": self.client.token_secret}
+        headers = {"token": self.client.token}
 
         query = {
             "actions": actions,
@@ -362,7 +379,7 @@ class Model:
             ...     ["x"],
             ...     {"y": 0.5}
         """
-        headers = {"token": self.client.token_secret}
+        headers = {"token": self.client.token}
 
         query = {
             "targets": targets,
@@ -397,7 +414,7 @@ class Model:
         Example:
             >>> model.causal_attributions("y")
         """
-        headers = {"token": self.client.token_secret}
+        headers = {"token": self.client.token}
 
         query = {
             "outcome": outcome,
@@ -420,7 +437,7 @@ class Model:
 
     def _update(self) -> None:
         """Pushes the current state of the model to the CausaDB server."""
-        headers = {"token": self.client.token_secret}
+        headers = {"token": self.client.token}
 
         try:
             requests.post(

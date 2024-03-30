@@ -22,6 +22,7 @@ marko = "^2.0.2"
 setuptools = "^69.0.3"
 python-dotenv = "^1.0.1"
 pyarrow = "^15.0.0"
+tqdm = "^4.66.2"
 
 [tool.poetry.group.dev.dependencies]
 invoke = "^2.2.0"

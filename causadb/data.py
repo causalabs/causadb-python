@@ -19,7 +19,7 @@ class Data:
 
     def remove(self) -> None:
         """Remove the data from the CausaDB system."""
-        headers = {"token": self.client.token_secret}
+        headers = {"token": self.client.token}
         try:
             requests.delete(
                 f"{get_causadb_url()}/data/{self.data_name}",
@@ -38,6 +38,24 @@ class Data:
 
         self._update(dataset)
 
+    def from_pandas(self, dataframe: pd.DataFrame) -> None:
+        """Add data from a pandas DataFrame.
+
+        Args:
+            dataframe (pd.DataFrame): The pandas DataFrame.
+        """
+        dataset = dataframe.to_dict()
+
+        self._update(dataset)
+
+    def from_dict(self, data: dict) -> None:
+        """Add data from a dictionary.
+
+        Args:
+            data (dict): The data dictionary.
+        """
+        self._update(data)
+
     def _update(self, data: dict) -> None:
         """Pushes the data to the CausaDB server.
 
@@ -47,7 +65,7 @@ class Data:
 
         # Send a POST request to the CausaDB server to update the data
         try:
-            headers = {"token": self.client.token_secret}
+            headers = {"token": self.client.token}
             response = requests.post(
                 f"{get_causadb_url()}/data/{self.data_name}",
                 headers=headers,
