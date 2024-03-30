@@ -1,5 +1,6 @@
 import requests
 import os
+import toml
 from .data import Data
 from .model import Model
 from .utils import get_causadb_url, set_causadb_url
@@ -13,32 +14,59 @@ class CausaDB:
         return f"<CausaDB client>"
 
     def __str__(self) -> str:
-        return f"{self.token_id}"
+        return "CausaDB client"
 
-    def __init__(self, custom_url=None) -> None:
+    def __init__(self, token: str = None, custom_url: str = None) -> None:
         """Initializes the CausaDB client.
 
         Args:
             custom_url (str, optional): The URL of the CausaDB server. For custom deployments or development purposes. Defaults to None.
         """
-        self.token_id = None
-        self.token_secret = None
+        # If the token is not provided, try to load it from the config file
+        if token is None:
+            token = self._load_token()
+
+        # If we now have a token, set it. If not, the user will have to use set_token.
+        if token is not None:
+            self.set_token(token)
+
+        # If a custom URL is provided, set it
         if custom_url is not None:
             set_causadb_url(custom_url)
 
-    def set_token(self, token_id: str, token_secret: str) -> bool:
+    def _load_token(self) -> str:
+        """Load the token from the config file.
+
+        Returns:
+            str: The token secret.
+        """
+        dir_name = os.path.expanduser("~/.causadb")
+        config_filepath = os.path.join(dir_name, "config.toml")
+
+        if not os.path.exists(config_filepath):
+            raise Exception("No token found")
+
+        with open(config_filepath, "r") as f:
+            config = toml.load(f)
+
+        token_secret = config \
+            .get("default", {}) \
+            .get("token_secret", None)
+
+        return token_secret
+
+    def set_token(self, token: str) -> None:
         """Set the token for the CausaDB client.
 
         Args:
-            token_id (str): Token ID provided by CausaDB.
-            token_secret (str): Token secret provided by CausaDB.
+            token (str): Token secret provided by CausaDB.
 
-        Returns:
-            bool: True if the token is valid, False otherwise.
+        Raises:
+            Exception: If the token is invalid.
         """
 
         # Verify that the tokens are correct
-        headers = {"token": token_secret}
+        headers = {"token": token}
         response = requests.get(
             f"{get_causadb_url()}/account",
             headers=headers
@@ -46,8 +74,7 @@ class CausaDB:
 
         # If the response is successful, set the tokens
         if response.status_code == 200:
-            self.token_id = token_id
-            self.token_secret = token_secret
+            self.token = token
         else:
             raise Exception("Invalid token")
 
@@ -82,7 +109,7 @@ class CausaDB:
         Returns:
             Model: The model object.
         """
-        headers = {"token": self.token_secret}
+        headers = {"token": self.token}
 
         try:
             response = requests.get(
@@ -102,7 +129,7 @@ class CausaDB:
         Returns:
             list[Model]: A list of model objects.
         """
-        headers = {"token": self.token_secret}
+        headers = {"token": self.token}
 
         try:
             response = requests.get(
@@ -127,7 +154,7 @@ class CausaDB:
         Returns:
             Data: The data object.
         """
-        headers = {"token": self.token_secret}
+        headers = {"token": self.token}
         try:
             response = requests.get(
                 f"{get_causadb_url()}/data/{data_name}", headers=headers
@@ -145,7 +172,7 @@ class CausaDB:
         Returns:
             list[Data]: A list of data objects.
         """
-        headers = {"token": self.token_secret}
+        headers = {"token": self.token}
 
         try:
             response = requests.get(
