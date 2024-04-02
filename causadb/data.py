@@ -25,8 +25,8 @@ class Data:
                 f"{get_causadb_url()}/data/{self.data_name}",
                 headers=headers,
             )
-        except:
-            raise Exception("CausaDB server request failed")
+        except Exception as e:
+            raise Exception(f"CausaDB server request failed: {e}")
 
     def from_csv(self, filepath: str) -> None:
         """Add data from a CSV file.
@@ -63,6 +63,13 @@ class Data:
             data (dict): The new data.
         """
 
+        # Check if the data are valid (no missing values, all numeric)
+        df = pd.DataFrame.from_dict(data) \
+            .apply(pd.to_numeric, errors="coerce")
+        if df.isnull().values.any():
+            raise Exception(
+                "Data contains missing values. Missing values are not yet supported.")
+
         # Send a POST request to the CausaDB server to update the data
         try:
             headers = {"token": self.client.token}
@@ -71,8 +78,8 @@ class Data:
                 headers=headers,
                 json=data,
             ).json()
-        except:
-            raise Exception("CausaDB client failed to connect to server")
+        except Exception as e:
+            raise Exception(f"CausaDB server request failed: {e}")
 
         if response["status"] != "success":
             # If the response is not successful, raise an exception and include the error message
