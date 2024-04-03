@@ -115,8 +115,8 @@ class CausaDB:
             response = requests.get(
                 f"{get_causadb_url()}/models/{model_name}", headers=headers
             ).json()
-        except:
-            raise Exception("CausaDB server request failed")
+        except Exception as e:
+            raise Exception(f"CausaDB server request failed: {e}")
 
         # If the model exists, return it
         model = Model(model_name, self)
@@ -135,8 +135,8 @@ class CausaDB:
             response = requests.get(
                 f"{get_causadb_url()}/models", headers=headers
             ).json()
-        except:
-            raise Exception("CausaDB server request failed")
+        except Exception as e:
+            raise Exception(f"CausaDB server request failed: {e}")
 
         model_list = []
         for model_spec in response.get("models", []):
@@ -159,8 +159,8 @@ class CausaDB:
             response = requests.get(
                 f"{get_causadb_url()}/data/{data_name}", headers=headers
             ).json()
-        except:
-            raise Exception("CausaDB server request failed")
+        except Exception as e:
+            raise Exception(f"CausaDB server request failed: {e}")
 
         data = Data(data_name, self)
 
@@ -178,8 +178,8 @@ class CausaDB:
             response = requests.get(
                 f"{get_causadb_url()}/data", headers=headers
             ).json()
-        except:
-            raise Exception("CausaDB client failed to connect to server")
+        except Exception as e:
+            raise Exception(f"CausaDB server request failed: {e}")
 
         data_list = []
         for data_spec in response.get("data", []):

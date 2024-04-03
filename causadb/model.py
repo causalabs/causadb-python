@@ -42,8 +42,8 @@ class Model:
                 f"{get_causadb_url()}/models/{self.model_name}",
                 headers=headers,
             )
-        except:
-            raise Exception("CausaDB server request failed")
+        except Exception as e:
+            raise Exception(f"CausaDB server request failed: {e}")
 
     def set_nodes(self, nodes: list[str]) -> None:
         """Set the nodes of the model.
@@ -60,8 +60,8 @@ class Model:
             response = requests.get(
                 f"{get_causadb_url()}/models/{self.model_name}", headers=headers
             ).json()
-        except:
-            raise Exception("CausaDB server request failed")
+        except Exception as e:
+            raise Exception(f"CausaDB server request failed: {e}")
 
         self.config = response["details"]["config"]
         self.config["nodes"] = nodes
@@ -80,8 +80,8 @@ class Model:
             response = requests.get(
                 f"{get_causadb_url()}/models/{self.model_name}", headers=headers
             ).json()
-        except:
-            raise Exception("CausaDB server request failed")
+        except Exception as e:
+            raise Exception(f"CausaDB server request failed: {e}")
 
         return response["details"]["config"]["nodes"]
 
@@ -103,8 +103,8 @@ class Model:
             response = requests.get(
                 f"{get_causadb_url()}/models/{self.model_name}", headers=headers
             ).json()
-        except:
-            raise Exception("CausaDB server request failed")
+        except Exception as e:
+            raise Exception(f"CausaDB server request failed: {e}")
 
         self.config = response["details"]["config"]
         self.config["edges"] = edges
@@ -123,8 +123,8 @@ class Model:
             response = requests.get(
                 f"{get_causadb_url()}/models/{self.model_name}", headers=headers
             ).json()
-        except:
-            raise Exception("CausaDB server request failed")
+        except Exception as e:
+            raise Exception(f"CausaDB server request failed: {e}")
 
         edges = response["details"]["config"]["edges"]
         # Convert the edges to a list of tuples
@@ -147,8 +147,8 @@ class Model:
             response = requests.get(
                 f"{get_causadb_url()}/models/{self.model_name}", headers=headers
             ).json()
-        except:
-            raise Exception("CausaDB server request failed")
+        except Exception as e:
+            raise Exception(f"CausaDB server request failed: {e}")
 
         self.config = response["details"]["config"]
         self.config["node_types"] = node_types
@@ -167,8 +167,8 @@ class Model:
             response = requests.get(
                 f"{get_causadb_url()}/models/{self.model_name}", headers=headers
             ).json()
-        except:
-            raise Exception("CausaDB server request failed")
+        except Exception as e:
+            raise Exception(f"CausaDB server request failed: {e}")
 
         return response["details"]["config"]["node_types"]
 
@@ -185,8 +185,8 @@ class Model:
                 f"{get_causadb_url()}/models/{self.model_name}/attach/{data_name}",
                 headers=headers
             ).json()
-        except:
-            raise Exception("CausaDB server request failed")
+        except Exception as e:
+            raise Exception(f"CausaDB server request failed: {e}")
 
     def detach(self, data_name: str) -> None:
         """Detach data from the model.
@@ -201,8 +201,8 @@ class Model:
                 f"{get_causadb_url()}/models/{self.model_name}/detach",
                 headers=headers
             ).json()
-        except:
-            raise Exception("CausaDB server request failed")
+        except Exception as e:
+            raise Exception(f"CausaDB server request failed: {e}")
 
     def train(self, data_name: str = None, wait: bool = True, poll_interval: float = 0.2, poll_limit: float = 30.0, verbose: bool = False, progress_interval: float = 1.0) -> None:
         """Train the model.
@@ -229,8 +229,8 @@ class Model:
                 f"{get_causadb_url()}/models/{self.model_name}/train",
                 headers=headers
             )
-        except:
-            raise Exception("CausaDB server request failed")
+        except Exception as e:
+            raise Exception(f"CausaDB server request failed: {e}")
 
         # If HTTPException status code is 400, raise an exception
         if response.status_code == 400:
@@ -252,7 +252,8 @@ class Model:
                     last_progress = time_elapsed
 
                 if time_elapsed > poll_limit:
-                    raise Exception("Model training took too long")
+                    raise Exception(
+                        "Model training took too long. Waiting time exceeded but the model is still training.")
             if verbose:
                 print(f"Model training progress: {self.status()}")
 
@@ -269,8 +270,8 @@ class Model:
                 f"{get_causadb_url()}/models/{self.model_name}",
                 headers=headers,
             ).json()
-        except:
-            raise Exception("CausaDB server request failed")
+        except Exception as e:
+            raise Exception(f"CausaDB server request failed: {e}")
 
         model_status = response["details"]["status"]
 
@@ -308,8 +309,8 @@ class Model:
                 headers=headers,
                 json=query,
             ).json()
-        except:
-            raise Exception("CausaDB server request failed")
+        except Exception as e:
+            raise Exception(f"CausaDB server request failed: {e}")
 
         if "outcome" in response:
             outcome = response["outcome"]
@@ -354,8 +355,8 @@ class Model:
                 headers=headers,
                 json=query,
             ).json()
-        except:
-            raise Exception("CausaDB server request failed")
+        except Exception as e:
+            raise Exception(f"CausaDB server request failed: {e}")
 
         if "outcome" in response:
             return pd.DataFrame.from_dict(response["outcome"])
@@ -393,8 +394,8 @@ class Model:
                 headers=headers,
                 json=query,
             ).json()
-        except:
-            raise Exception("CausaDB server request failed")
+        except Exception as e:
+            raise Exception(f"CausaDB server request failed: {e}")
 
         if "best_actions" in response:
             return pd.DataFrame.from_dict(response["best_actions"])
@@ -427,8 +428,8 @@ class Model:
                 headers=headers,
                 json=query,
             ).json()
-        except:
-            raise Exception("CausaDB server request failed")
+        except Exception as e:
+            raise Exception(f"CausaDB server request failed: {e}")
 
         if "outcome" in response:
             return pd.DataFrame.from_dict(response["outcome"])
@@ -445,5 +446,5 @@ class Model:
                 headers=headers,
                 json=self.config
             ).json()
-        except:
-            raise Exception("CausaDB server request failed")
+        except Exception as e:
+            raise Exception(f"CausaDB server request failed: {e}")
