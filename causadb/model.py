@@ -3,7 +3,7 @@ import time
 import pandas as pd
 import numpy as np
 from typing import Union
-from pydantic import ValidationError, validate_call
+from pydantic import validate_call
 
 from .utils import get_causadb_url
 
@@ -332,7 +332,7 @@ class Model:
         raise Exception("CausaDB server request failed")
 
     @validate_call
-    def causal_effects(self, actions: Union[str, dict[str, tuple[np.ndarray, np.ndarray]]], fixed: dict[str, np.ndarray] = None, interval: float = 0.90, observation_noise=False) -> pd.DataFrame:
+    def causal_effects(self, actions: Union[str, dict[str, tuple[float, float]]], fixed: dict[str, float] = None, interval: float = 0.90, observation_noise=False) -> pd.DataFrame:
         """ Get the causal effects of actions on the model.
 
         Args:
