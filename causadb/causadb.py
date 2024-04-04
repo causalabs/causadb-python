@@ -1,6 +1,7 @@
 import requests
 import os
 import toml
+from pydantic import validate_call
 from .data import Data
 from .model import Model
 from .utils import get_causadb_url, set_causadb_url
@@ -55,6 +56,7 @@ class CausaDB:
 
         return token_secret
 
+    @validate_call
     def set_token(self, token: str) -> None:
         """Set the token for the CausaDB client.
 
@@ -78,6 +80,7 @@ class CausaDB:
         else:
             raise Exception("Invalid token")
 
+    @validate_call
     def create_model(self, model_name: str) -> Model:
         """Create a model and add it to the CausaDB system.
 
@@ -89,6 +92,7 @@ class CausaDB:
         """
         return Model(model_name, self)
 
+    @validate_call
     def add_data(self, data_name: str) -> Data:
         """Add data to the CausaDB system.
 
@@ -100,6 +104,7 @@ class CausaDB:
         """
         return Data(data_name, self)
 
+    @validate_call
     def get_model(self, model_name: str) -> Model:
         """Get a model by name.
 
@@ -123,6 +128,7 @@ class CausaDB:
 
         return model
 
+    @validate_call
     def list_models(self) -> list[Model]:
         """List all models.
 
@@ -145,6 +151,7 @@ class CausaDB:
 
         return model_list
 
+    @validate_call
     def get_data(self, data_name: str) -> Data:
         """Get a data by name.
 

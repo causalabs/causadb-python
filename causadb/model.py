@@ -3,6 +3,7 @@ import time
 import pandas as pd
 import numpy as np
 from typing import Union
+from pydantic import validate_call
 
 from .utils import get_causadb_url
 
@@ -45,6 +46,7 @@ class Model:
         except Exception as e:
             raise Exception(f"CausaDB server request failed: {e}")
 
+    @validate_call
     def set_nodes(self, nodes: list[str]) -> None:
         """Set the nodes of the model.
 
@@ -85,6 +87,7 @@ class Model:
 
         return response["details"]["config"]["nodes"]
 
+    @validate_call
     def set_edges(self, edges: list[tuple[str, str]]) -> None:
         """Set the edges of the model.
 
@@ -130,6 +133,7 @@ class Model:
         # Convert the edges to a list of tuples
         return [(edge[0], edge[1]) for edge in edges]
 
+    @validate_call
     def set_node_types(self, node_types: dict) -> None:
         """Set the node types of the model.
 
@@ -155,6 +159,7 @@ class Model:
 
         self._update()
 
+    @validate_call
     def get_node_types(self) -> dict:
         """Get the node types of the model.
 
@@ -172,6 +177,7 @@ class Model:
 
         return response["details"]["config"]["node_types"]
 
+    @validate_call
     def attach(self, data_name: str) -> None:
         """Attach data to the model.
 
@@ -188,6 +194,7 @@ class Model:
         except Exception as e:
             raise Exception(f"CausaDB server request failed: {e}")
 
+    @validate_call
     def detach(self, data_name: str) -> None:
         """Detach data from the model.
 
@@ -204,6 +211,7 @@ class Model:
         except Exception as e:
             raise Exception(f"CausaDB server request failed: {e}")
 
+    @validate_call
     def train(self, data_name: str = None, wait: bool = True, poll_interval: float = 0.2, poll_limit: float = 30.0, verbose: bool = False, progress_interval: float = 1.0) -> None:
         """Train the model.
 
@@ -277,6 +285,7 @@ class Model:
 
         return model_status
 
+    @validate_call
     def simulate_actions(self, actions: dict, fixed: dict = {}, interval: float = 0.9, observation_noise: bool = False) -> dict:
         """Simulate an action on the model.
 
@@ -322,7 +331,8 @@ class Model:
 
         raise Exception("CausaDB server request failed")
 
-    def causal_effects(self, actions: Union[str, dict[str, tuple[np.ndarray, np.ndarray]]], fixed: dict[str, np.ndarray] = None, interval: float = 0.90, observation_noise=False) -> pd.DataFrame:
+    @validate_call
+    def causal_effects(self, actions: Union[str, dict[str, tuple[float, float]]], fixed: dict[str, float] = None, interval: float = 0.90, observation_noise=False) -> pd.DataFrame:
         """ Get the causal effects of actions on the model.
 
         Args:
@@ -363,6 +373,7 @@ class Model:
 
         raise Exception("CausaDB server request failed")
 
+    @validate_call
     def find_best_actions(self, targets: dict[str, float], actionable: list[str], fixed: dict[str, float] = {}) -> dict:
         """Get the optimal actions for a given set of target outcomes.
 
@@ -402,6 +413,7 @@ class Model:
 
         raise Exception("CausaDB server request failed")
 
+    @validate_call
     def causal_attributions(self, outcome: str, normalise: bool = False) -> pd.DataFrame:
         """Get the causal attributions for an outcome.
 
