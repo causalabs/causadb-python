@@ -1,6 +1,7 @@
 # Get Node Types
 
 ```python
+@validate_call
 def get_node_types() -> dict
 ```
 

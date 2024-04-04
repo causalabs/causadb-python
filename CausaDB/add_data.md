@@ -1,6 +1,7 @@
 # Add Data
 
 ```python
+@validate_call
 def add_data(data_name: str) -> Data
 ```
 

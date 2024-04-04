@@ -1,6 +1,7 @@
 # Simulate Actions
 
 ```python
+@validate_call
 def simulate_actions(actions: dict,
                      fixed: dict = \{\},
                      interval: float = 0.9,

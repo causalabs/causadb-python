@@ -1,6 +1,7 @@
 # Detach
 
 ```python
+@validate_call
 def detach(data_name: str) -> None
 ```
 

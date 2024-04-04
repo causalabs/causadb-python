@@ -1,6 +1,7 @@
 # Get Model
 
 ```python
+@validate_call
 def get_model(model_name: str) -> Model
 ```
 

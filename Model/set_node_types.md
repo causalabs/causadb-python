@@ -1,6 +1,7 @@
 # Set Node Types
 
 ```python
+@validate_call
 def set_node_types(node_types: dict) -> None
 ```
 

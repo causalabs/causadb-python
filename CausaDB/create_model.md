@@ -1,6 +1,7 @@
 # Create Model
 
 ```python
+@validate_call
 def create_model(model_name: str) -> Model
 ```
 

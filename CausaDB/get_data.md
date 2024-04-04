@@ -1,6 +1,7 @@
 # Get Data
 
 ```python
+@validate_call
 def get_data(data_name: str) -> Data
 ```
 

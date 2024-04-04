@@ -1,6 +1,7 @@
 # Find Best Actions
 
 ```python
+@validate_call
 def find_best_actions(targets: dict[str, float],
                       actionable: list[str],
                       fixed: dict[str, float] = \{\}) -> dict

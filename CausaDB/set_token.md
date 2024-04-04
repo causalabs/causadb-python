@@ -1,6 +1,7 @@
 # Set Token
 
 ```python
+@validate_call
 def set_token(token: str) -> None
 ```
 

@@ -1,9 +1,9 @@
 # Causal Effects
 
 ```python
-def causal_effects(actions: Union[str, dict[str, tuple[np.ndarray,
-                                                       np.ndarray]]],
-                   fixed: dict[str, np.ndarray] = None,
+@validate_call
+def causal_effects(actions: Union[str, dict[str, tuple[float, float]]],
+                   fixed: dict[str, float] = None,
                    interval: float = 0.90,
                    observation_noise=False) -> pd.DataFrame
 ```

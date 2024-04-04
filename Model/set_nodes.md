@@ -1,6 +1,7 @@
 # Set Nodes
 
 ```python
+@validate_call
 def set_nodes(nodes: list[str]) -> None
 ```
 

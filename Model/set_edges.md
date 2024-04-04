@@ -1,6 +1,7 @@
 # Set Edges
 
 ```python
+@validate_call
 def set_edges(edges: list[tuple[str, str]]) -> None
 ```
 

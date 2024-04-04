@@ -1,6 +1,7 @@
 # Attach
 
 ```python
+@validate_call
 def attach(data_name: str) -> None
 ```
 

@@ -1,6 +1,7 @@
 # List Models
 
 ```python
+@validate_call
 def list_models() -> list[Model]
 ```
 

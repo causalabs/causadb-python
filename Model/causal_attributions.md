@@ -1,6 +1,7 @@
 # Causal Attributions
 
 ```python
+@validate_call
 def causal_attributions(outcome: str, normalise: bool = False) -> pd.DataFrame
 ```
 

@@ -1,6 +1,7 @@
 # Train
 
 ```python
+@validate_call
 def train(data_name: str = None,
           wait: bool = True,
           poll_interval: float = 0.2,
