@@ -17,6 +17,33 @@ def client():
     return client
 
 
+@pytest.fixture
+def model_trained(client):
+    model = client.create_model("test-model-12345")
+
+    model.set_nodes(["x", "y", "z"])
+    model.set_edges([
+        ("x", "y"),
+        ("y", "z"),
+    ])
+
+    data = {
+        "x": [1.01, 2.03, 2.98, 4.01, 5.0001],
+        "y": [2.1, 3.9, 6.2, 7.6, 9.6],
+        "z": [1.1, 2.1, 2.9, 4.3, 4.7],
+    }
+
+    df = pd.DataFrame(data)
+
+    client.add_data("test-data-12345").from_pandas(df)
+
+    model.attach("test-data-12345")
+
+    model.train("test-data-12345")
+
+    return model
+
+
 def test_model_train_missing_data(client):
     # Create a new model
     model = client.create_model("test-model-missing-data")
@@ -96,3 +123,8 @@ def test_model_train_wrong_node_types(client):
     # Train the model
     with pytest.raises(Exception):
         model.train("test-data-wrong-node-types")
+
+
+def test_model_simulate_actions_wrong_types(model_trained):
+    with pytest.raises(Exception):
+        model_trained.simulate_actions(1)
