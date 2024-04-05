@@ -129,7 +129,7 @@ def test_model_find_best_actions(client):
 
 def test_model_causal_effects(client):
     model = client.get_model("test-model-12345")
-    causal_effects = model.causal_effects("x")
+    causal_effects = model.causal_effects({"x": [0, 1]})
     # Should contain y and z in row index
     assert "y" in causal_effects.index
     assert "z" in causal_effects.index
@@ -137,7 +137,6 @@ def test_model_causal_effects(client):
     assert "median" in causal_effects.columns
     assert "lower" in causal_effects.columns
     assert "upper" in causal_effects.columns
-    causal_effects = model.causal_effects({"x": [0, 1]})
 
 
 def test_model_causal_attributions(client):
