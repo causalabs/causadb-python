@@ -13,7 +13,7 @@ causadb = "causadb.cli.main:app"
 
 [tool.poetry.dependencies]
 python = "^3.9"
-typer = {extras = ["all"], version = "^0.9.0"}
+typer = {extras = ["all"], version = "^0.12.1"}
 requests = "^2.31.0"
 toml = "^0.10.2"
 rich = "^13.7.0"
