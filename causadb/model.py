@@ -317,9 +317,14 @@ class Model:
                 f"{get_causadb_url()}/models/{self.model_name}/simulate-actions",
                 headers=headers,
                 json=query,
-            ).json()
+            )
         except Exception as e:
             raise Exception(f"CausaDB server request failed: {e}")
+
+        if response.status_code != 200:
+            raise Exception(response.json()["detail"])
+
+        response = response.json()
 
         if "outcome" in response:
             outcome = response["outcome"]
@@ -329,7 +334,7 @@ class Model:
                 "upper": pd.DataFrame.from_dict(outcome["upper"])
             }
 
-        raise Exception("CausaDB server request failed")
+        raise Exception("CausaDB server request failed - unexpected response.")
 
     @validate_call
     def causal_effects(self, actions: Union[str, dict[str, tuple[float, float]]], fixed: dict[str, float] = None, interval: float = 0.90, observation_noise=False) -> pd.DataFrame:
@@ -364,17 +369,22 @@ class Model:
                 f"{get_causadb_url()}/models/{self.model_name}/causal-effects",
                 headers=headers,
                 json=query,
-            ).json()
+            )
         except Exception as e:
             raise Exception(f"CausaDB server request failed: {e}")
+
+        if response.status_code != 200:
+            raise Exception(response.json()["detail"])
+
+        response = response.json()
 
         if "outcome" in response:
             return pd.DataFrame.from_dict(response["outcome"])
 
-        raise Exception("CausaDB server request failed")
+        raise Exception("CausaDB server request failed - unexpected response.")
 
     @validate_call
-    def find_best_actions(self, targets: dict[str, float], actionable: list[str], fixed: dict[str, float] = {}) -> dict:
+    def find_best_actions(self, targets: dict[str, float], actionable: list[str], fixed: dict[str, float] = {}) -> pd.DataFrame:
         """Get the optimal actions for a given set of target outcomes.
 
         Args:
@@ -404,14 +414,19 @@ class Model:
                 f"{get_causadb_url()}/models/{self.model_name}/find-best-actions",
                 headers=headers,
                 json=query,
-            ).json()
+            )
         except Exception as e:
             raise Exception(f"CausaDB server request failed: {e}")
+
+        if response.status_code != 200:
+            raise Exception(response.json()["detail"])
+
+        response = response.json()
 
         if "best_actions" in response:
             return pd.DataFrame.from_dict(response["best_actions"])
 
-        raise Exception("CausaDB server request failed")
+        raise Exception("CausaDB server request failed - unexpected response.")
 
     @validate_call
     def causal_attributions(self, outcome: str, normalise: bool = False) -> pd.DataFrame:
@@ -439,9 +454,14 @@ class Model:
                 f"{get_causadb_url()}/models/{self.model_name}/causal-attributions",
                 headers=headers,
                 json=query,
-            ).json()
+            )
         except Exception as e:
             raise Exception(f"CausaDB server request failed: {e}")
+
+        if response.status_code != 200:
+            raise Exception(response.json()["detail"])
+
+        response = response.json()
 
         if "outcome" in response:
             return pd.DataFrame.from_dict(response["outcome"])
@@ -453,10 +473,13 @@ class Model:
         headers = {"token": self.client.token}
 
         try:
-            requests.post(
+            response = requests.post(
                 f"{get_causadb_url()}/models/{self.model_name}",
                 headers=headers,
                 json=self.config
-            ).json()
+            )
         except Exception as e:
             raise Exception(f"CausaDB server request failed: {e}")
+
+        if response.status_code != 200:
+            raise Exception(response.json()["detail"])

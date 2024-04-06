@@ -4,6 +4,5 @@
         ["x", "z"],
         ["y", "z"]
     ],
-    "nodes": ["x", "y", "z"],
-    "node_types": {"x1": {"type": "seasonal", "min": 0, "max": 1}}
+    "nodes": ["x", "y", "z"]
 }

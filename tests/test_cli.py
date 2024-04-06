@@ -82,8 +82,6 @@ def test_models_status():
     result = runner.invoke(
         app, ["models", "status", "--model", "test"])
 
-    print(result.stdout)
-
     assert result.exit_code == 0
 
 
