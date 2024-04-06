@@ -123,8 +123,8 @@ def test_model_simulate_actions(client):
 
 def test_model_find_best_actions(client):
     model = client.get_model("test-model-12345")
-    best_actions = model.find_best_actions({"x": 0.5}, ["y"], {"z": 0.5})
-    assert "y" in best_actions
+    best_actions = model.find_best_actions({"y": 0.5}, ["x"], {"z": 0.5})
+    assert "x" in best_actions
 
 
 def test_model_causal_effects(client):
