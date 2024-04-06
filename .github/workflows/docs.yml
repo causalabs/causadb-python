@@ -27,6 +27,7 @@ jobs:
             - name: Build docs
               run: |
                   poetry run inv build-docs
+                  poetry run inv build-cli-docs
 
             - name: Deploy to docs branch
               uses: peaceiris/actions-gh-pages@v3
@@ -34,3 +35,10 @@ jobs:
                   github_token: ${{ secrets.GITHUB_TOKEN }}
                   publish_branch: docs
                   publish_dir: ./docs
+
+            - name: Deploy to CLI docs branch
+              uses: peaceiris/actions-gh-pages@v3
+              with:
+                  github_token: ${{ secrets.GITHUB_TOKEN }}
+                  publish_branch: cli-docs
+                  publish_dir: ./cli-docs

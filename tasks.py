@@ -75,6 +75,43 @@ def parse_markdown(file_path):
         write_content()  # Write content for the last section
 
 
+def parse_markdown_cli(file_path):
+    # Load the markdown from filepath
+    with open(file_path, 'r', encoding='utf-8') as file:
+        content = file.readlines()
+
+    # Split the content into sections based on any header
+    sections = []
+    current_section = []
+    for line in content:
+        if line.startswith("#"):
+            if current_section:
+                sections.append(current_section)
+                current_section = []
+        # If the line is a header, convert it to H1 and remove backticks
+        if line.startswith("#"):
+            line = f"# {line.strip('# ')}"
+            # if the line isn't just causadb, remove causadb from the line
+            if line != "# causadb":
+                line = line.replace("causadb ", "")
+        current_section.append(line)
+    sections.append(current_section)
+
+    # Write the content to separate files
+    for section in sections:
+        if len(section) > 1:
+            h1 = section[0].strip("# ").strip()
+            h1 = h1.replace(" ", "_")
+            h1 = h1.lower()
+            h1 = h1.replace("objects", "")
+            h1 = h1.strip()
+            h1 = h1.replace("__init__", "constructor")
+            h1 = h1.replace("`", "")
+
+            with open(f"cli_docs/{h1}.md", 'w', encoding='utf-8') as f:
+                f.writelines(section)
+
+
 @task
 def build_docs(c):
     """
@@ -83,3 +120,19 @@ def build_docs(c):
     c.run("poetry run pydoc-markdown pydoc-markdown.yml")
 
     parse_markdown("build/docs/content/generated.md")
+
+
+@task
+def build_cli_docs(c):
+    """
+    Build the CLI documentation.
+    """
+    c.run("poetry run typer causadb/cli/main.py utils docs --name causadb --output cli_docs.md")
+
+    if not os.path.exists("cli_docs"):
+        os.makedirs("cli_docs")
+
+    parse_markdown_cli("cli_docs.md")
+
+    # Clean up the markdown file
+    os.remove("cli_docs.md")
