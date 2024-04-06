@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "causadb"
-version = "1.8.2"
+version = "1.8.3"
 description = ""
 authors = ["Jordan hart <jordan@causa.tech>"]
 readme = "README.md"
