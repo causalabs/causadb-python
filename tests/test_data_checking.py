@@ -216,3 +216,31 @@ def test_find_best_actions_untrained_model(model_untrained):
     with pytest.raises(Exception) as excinfo:
         model_untrained.find_best_actions({"y": 0.5}, ["x"], {"z": 0.5})
     assert "not trained" in str(excinfo.value)
+
+
+def test_simulate_actions_wrong_nodes(model_trained):
+    # Try to simulate actions with wrong nodes
+    with pytest.raises(Exception) as excinfo:
+        model_trained.simulate_actions({"a": 0})
+    assert "not found" in str(excinfo.value)
+
+
+def test_causal_effects_wrong_nodes(model_trained):
+    # Try to get causal effects with wrong nodes
+    with pytest.raises(Exception) as excinfo:
+        model_trained.causal_effects({"a": [0, 1]}, fixed={"y": 0})
+    assert "not found" in str(excinfo.value)
+
+
+def test_causal_attributions_wrong_nodes(model_trained):
+    # Try to get causal attributions with wrong nodes
+    with pytest.raises(Exception) as excinfo:
+        model_trained.causal_attributions("a")
+    assert "not found" in str(excinfo.value)
+
+
+def test_find_best_actions_wrong_nodes(model_trained):
+    # Try to find best actions with wrong nodes
+    with pytest.raises(Exception) as excinfo:
+        model_trained.find_best_actions({"a": 0.5}, ["b"], {"z": 0.5})
+    assert "not found" in str(excinfo.value)

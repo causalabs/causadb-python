@@ -14,10 +14,8 @@ def setup():
     """
     Set up a CausaDB account on this device
     """
-    token_id = typer.prompt(
-        "Token ID")
     token_secret = typer.prompt(
-        "Token secret")
+        "Enter your token (begins with cdb_)")
 
     headers = {"token": token_secret}
 
@@ -41,7 +39,6 @@ def setup():
                 config = toml.load(f)
 
         config["default"] = {
-            "token_id": token_id,
             "token_secret": token_secret,
         }
 
@@ -78,28 +75,3 @@ def remove():
 
         typer.echo(
             f"Account successfully removed from this device. You can add it again with `causadb account setup`.")
-
-
-@app.command()
-def info():
-    """
-    Show information about the account
-    """
-    # Get config from ~/.causadb/config.toml
-    dir_name = os.path.expanduser("~/.causadb")
-    config_filepath = os.path.join(dir_name, "config.toml")
-
-    if not os.path.exists(config_filepath):
-        typer.echo(
-            "No config found in ~/.causadb/config.toml.")
-        return 1
-
-    # Get the token from ~/.causadb/config.toml.
-    with open(config_filepath, "r") as f:
-        config = toml.load(f)
-
-    org_id = config[list(config.keys())[0]]["org_id"]
-    token = config[list(config.keys())[0]]["token"]
-
-    typer.echo(f"Organization ID: {org_id}")
-    typer.echo(f"Token: {token}")
