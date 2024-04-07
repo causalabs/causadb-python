@@ -129,7 +129,7 @@ def info(
 
     if model_name is None:
         model_name = typer.prompt(
-            "Enter the name of the model you wish to attach data to (e.g. my-model)")
+            "Enter the name of the model you wish to retrieve information about (e.g. my-model)")
 
     config = load_config()
     token_secret = config["default"]["token_secret"]
@@ -183,7 +183,7 @@ def attach(
 def detach(
     model_name: Annotated[str, typer.Option(
         "--model",
-        help="The name of the model you wish to attach data to.")] = None
+        help="The name of the model you wish to detach data from.")] = None
 ):
     """
     Detach a datasource from a model.
@@ -249,7 +249,7 @@ def status(
 
     if model_name is None:
         model_name = typer.prompt(
-            "Enter the name of the model you wish to attach data to (e.g. my-model)")
+            "Enter the name of the model you wish to retrieve status for (e.g. my-model)")
 
     config = load_config()
     token_secret = config["default"]["token_secret"]
