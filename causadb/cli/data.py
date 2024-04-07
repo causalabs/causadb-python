@@ -112,4 +112,4 @@ def remove(
             typer.echo(f"Failed to remove datasource: {data['message']}")
     else:
         typer.echo(
-            f"Failed to remove datasource. Server responded with status code {response.status_code}.")
+            f"Failed to remove datasource. Server responded with status code {response.status_code}. Message: {response.json()['detail']}")

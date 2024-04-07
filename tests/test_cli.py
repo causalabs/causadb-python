@@ -14,7 +14,7 @@ runner = CliRunner()
 
 def test_account_setup():
     result = runner.invoke(
-        app, ["account", "setup"], input=f"test-token-id\n{CAUSADB_TOKEN}\n")
+        app, ["account", "setup"], input=f"{CAUSADB_TOKEN}\n")
     assert result.exit_code == 0
     assert "Setup successful" in result.stdout
 
