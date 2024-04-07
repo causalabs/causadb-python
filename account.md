@@ -14,7 +14,6 @@ $ causadb account [OPTIONS] COMMAND [ARGS]...
 
 **Commands**:
 
-* `info`: Show information about the account
 * `remove`: Remove CausaDB account from this device
 * `setup`: Set up a CausaDB account on this device
 

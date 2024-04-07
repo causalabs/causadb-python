@@ -10,6 +10,6 @@ $ causadb models detach [OPTIONS]
 
 **Options**:
 
-* `--model TEXT`: The name of the model you wish to attach data to.
+* `--model TEXT`: The name of the model you wish to detach data from.
 * `--help`: Show this message and exit.
 
