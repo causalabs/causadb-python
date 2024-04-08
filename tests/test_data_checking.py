@@ -19,7 +19,7 @@ def client():
 
 @pytest.fixture
 def model_trained(client):
-    model = client.create_model("test-model-12345")
+    model = client.create_model("test-model-trained")
 
     model.set_nodes(["x", "y", "z"])
     model.set_edges([
@@ -27,19 +27,14 @@ def model_trained(client):
         ("y", "z"),
     ])
 
-    data = {
+    data = pd.DataFrame({
         "x": [1.01, 2.03, 2.98, 4.01, 5.0001],
         "y": [2.1, 3.9, 6.2, 7.6, 9.6],
         "z": [1.1, 2.1, 2.9, 4.3, 4.7],
-    }
+    })
 
-    df = pd.DataFrame(data)
-
-    client.add_data("test-data-12345").from_pandas(df)
-
-    model.attach("test-data-12345")
-
-    model.train("test-data-12345")
+    client.add_data("test-data-data-checking").from_pandas(data)
+    model.train("test-data-data-checking")
 
     return model
 
@@ -183,7 +178,7 @@ def test_invalid_token():
     assert "token" in str(excinfo.value)
 
 
-def test_find_best_actions_target_upstream(client, model_trained):
+def test_find_best_actions_target_upstream(model_trained):
     # Try to find the best actions with a target that is upstream from the action
     with pytest.raises(Exception) as excinfo:
         model_trained.find_best_actions(targets={"x": 0}, actionable=["y"])
