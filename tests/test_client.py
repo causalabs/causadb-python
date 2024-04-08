@@ -77,32 +77,32 @@ def test_model_get(client):
 
 def test_set_nodes(client):
     model = client.get_model("test-model-12345")
-    model.set_nodes(["x", "y", "z"])
+    model.set_nodes(["x1", "y", "z"])
     nodes = model.get_nodes()
-    assert "x" in nodes
+    assert "x1" in nodes
     assert len(nodes) == 3
 
 
 def test_set_edges(client):
     model = client.get_model("test-model-12345")
     model.set_edges([
-        ("x", "y"),
+        ("x1", "y"),
         ("y", "z"),
     ])
     edges = model.get_edges()
-    assert ("x", "y") in edges
+    assert ("x1", "y") in edges
     assert len(edges) == 2
 
 
 def test_set_node_types(client):
     model = client.get_model("test-model-12345")
     model.set_node_types({
-        "x": "continuous",
+        "x1": "continuous",
         "y": "continuous",
         "z": "continuous",
     })
     node_types = model.get_node_types()
-    assert node_types["x"] == "continuous"
+    assert node_types["x1"] == "continuous"
     assert len(node_types) == 3
 
 
@@ -114,7 +114,7 @@ def test_model_train(client):
 
 def test_model_simulate_actions(client):
     model = client.get_model("test-model-12345")
-    outcome = model.simulate_actions({"x": [0, 1]})
+    outcome = model.simulate_actions({"x1": [0, 1]})
     assert type(outcome) == dict
     assert "median" in outcome
     assert "lower" in outcome
@@ -123,13 +123,13 @@ def test_model_simulate_actions(client):
 
 def test_model_find_best_actions(client):
     model = client.get_model("test-model-12345")
-    best_actions = model.find_best_actions({"y": 0.5}, ["x"], {"z": 0.5})
-    assert "x" in best_actions
+    best_actions = model.find_best_actions({"y": 0.5}, ["x1"], {"z": 0.5})
+    assert "x1" in best_actions
 
 
 def test_model_causal_effects(client):
     model = client.get_model("test-model-12345")
-    causal_effects = model.causal_effects({"x": [0, 1]})
+    causal_effects = model.causal_effects({"x1": [0, 1]})
     # Should contain y and z in row index
     assert "y" in causal_effects.index
     assert "z" in causal_effects.index
@@ -141,12 +141,12 @@ def test_model_causal_effects(client):
 
 def test_model_causal_attributions(client):
     model = client.get_model("test-model-12345")
-    causal_attribution = model.causal_attributions("x")
+    causal_attribution = model.causal_attributions("x1")
     # Should contain y and z in row index
     assert "y" in causal_attribution.index
     assert "z" in causal_attribution.index
     # Should contain x in column index
-    assert "x" in causal_attribution.columns
+    assert "x1" in causal_attribution.columns
 
 
 def test_model_detach(client):
