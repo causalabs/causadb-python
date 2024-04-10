@@ -135,6 +135,34 @@ def test_model_train_wrong_node_types(client):
         model.train("test-data-wrong-node-types")
 
 
+def test_model_train_node_edge_mismatch(client):
+    # Create a new model
+    model = client.create_model("test-model-node-edge-mismatch")
+
+    # Define nodes and edges
+    model.set_nodes(["y", "z"])
+    model.set_edges([
+        ("x", "y"),
+        ("y", "z"),
+    ])
+
+    # Generate data with missing values
+    data = {
+        "x": [1, 1.9, 3, 3.8, 5],
+        "y": [2, 3.1, 4, 7, 9],
+        "z": [1.2, 2, 3.1, 4, 5.1],
+    }
+    df = pd.DataFrame(data)
+
+    # Add data to CausaDB
+    client.add_data("test-data-node-edge-mismatch").from_pandas(df)
+
+    # Train the model
+    with pytest.raises(Exception) as excinfo:
+        model.train("test-data-node-edge-mismatch")
+    assert "not found" in str(excinfo.value)
+
+
 def test_model_simulate_actions_wrong_types(model_trained):
     with pytest.raises(Exception):
         model_trained.simulate_actions(1)
