@@ -153,7 +153,7 @@ def test_model_detach(client):
     model = client.get_model("test-model-12345")
     model.detach("test-data-2")
     with pytest.raises(Exception):
-        model.train()
+        model.train(poll_limit=2)
 
 
 def test_data_remove(client):
