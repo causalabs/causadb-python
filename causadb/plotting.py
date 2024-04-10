@@ -19,7 +19,7 @@ def plot_causal_graph(model: "Model") -> None:
     ```
     """
     G = nx.DiGraph(model.get_edges())
-    pos = nx.layout.planar_layout(G)
+    pos = nx.layout.spring_layout(G)
     nx.draw(
         G,
         pos=pos,
