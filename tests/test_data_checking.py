@@ -34,7 +34,7 @@ def model_trained(client):
     })
 
     client.add_data("test-data-data-checking").from_pandas(data)
-    model.train("test-data-data-checking")
+    model.train("test-data-data-checking", poll_limit=2)
 
     return model
 
@@ -132,7 +132,7 @@ def test_model_train_wrong_node_types(client):
 
     # Train the model
     with pytest.raises(Exception):
-        model.train("test-data-wrong-node-types")
+        model.train("test-data-wrong-node-types", poll_limit=2)
 
 
 def test_model_train_node_edge_mismatch(client):
@@ -159,7 +159,7 @@ def test_model_train_node_edge_mismatch(client):
 
     # Train the model
     with pytest.raises(Exception) as excinfo:
-        model.train("test-data-node-edge-mismatch")
+        model.train("test-data-node-edge-mismatch", poll_limit=2)
     assert "not found" in str(excinfo.value)
 
 
@@ -193,7 +193,7 @@ def test_model_structure_invalid(client):
     # Try to train the model, check it raises an exception mentioning the cycle
 
     with pytest.raises(Exception) as excinfo:
-        model.train("test-data-invalid-structure")
+        model.train("test-data-invalid-structure", poll_limit=2)
 
     assert "cycles" in str(excinfo.value)
 
