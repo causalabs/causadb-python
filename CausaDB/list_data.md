@@ -10,3 +10,9 @@ List all data.
 
 - `list[Data]` - A list of data objects.
 
+<a id="model"></a>
+
+# model
+
+<a id="model.Model"></a>
+

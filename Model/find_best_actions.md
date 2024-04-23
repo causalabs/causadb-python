@@ -4,7 +4,8 @@
 @validate_call
 def find_best_actions(targets: dict[str, float],
                       actionable: list[str],
-                      fixed: dict[str, float] = \{\}) -> pd.DataFrame
+                      fixed: dict[str, float] = \{\},
+                      constraints: dict[str, tuple] = \{\}) -> pd.DataFrame
 ```
 
 Get the optimal actions for a given set of target outcomes.

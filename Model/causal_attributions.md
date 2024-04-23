@@ -22,9 +22,3 @@ Get the causal attributions for an outcome.
 
   >>> model.causal_attributions("y")
 
-<a id="data"></a>
-
-# data
-
-<a id="data.Data"></a>
-
