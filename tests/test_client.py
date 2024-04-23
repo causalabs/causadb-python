@@ -123,7 +123,12 @@ def test_model_simulate_actions(client):
 
 def test_model_find_best_actions(client):
     model = client.get_model("test-model-12345")
-    best_actions = model.find_best_actions({"y": 0.5}, ["x1"], {"z": 0.5})
+    best_actions = model.find_best_actions(
+        targets={"y": 0.5},
+        actionable=["x1"],
+        fixed={"z": 0.5},
+        constraints={"x1": [0, 1]}
+    )
     assert "x1" in best_actions
 
 

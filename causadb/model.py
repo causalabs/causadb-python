@@ -384,7 +384,7 @@ class Model:
         raise Exception("CausaDB server request failed - unexpected response.")
 
     @validate_call
-    def find_best_actions(self, targets: dict[str, float], actionable: list[str], fixed: dict[str, float] = {}) -> pd.DataFrame:
+    def find_best_actions(self, targets: dict[str, float], actionable: list[str], fixed: dict[str, float] = {}, constraints: dict[str, tuple] = {}) -> pd.DataFrame:
         """Get the optimal actions for a given set of target outcomes.
 
         Args:
@@ -406,7 +406,8 @@ class Model:
         query = {
             "targets": targets,
             "actionable": actionable,
-            "fixed": fixed
+            "fixed": fixed,
+            "constraints": constraints
         }
 
         try:
