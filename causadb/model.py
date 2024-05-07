@@ -383,14 +383,18 @@ class Model:
 
         raise Exception("CausaDB server request failed - unexpected response.")
 
-    @validate_call
-    def find_best_actions(self, targets: dict[str, float], actionable: list[str], fixed: dict[str, float] = {}, constraints: dict[str, tuple] = {}) -> pd.DataFrame:
+    # @validate_call
+    def find_best_actions(self, targets: dict[str, float], actionable: list[str], fixed: dict[str, list[float]] = {},
+                          constraints: dict[str, tuple] = {}, data: pd.DataFrame = None, target_importance: dict[str, float] = {}) -> pd.DataFrame:
         """Get the optimal actions for a given set of target outcomes.
 
         Args:
             targets (dict[str, float]): A dictionary representing the target outcomes.
             actionable (list[str]): A list of actionable nodes.
             fixed (dict[str, float]): A dictionary representing the fixed nodes.
+            constraints (dict[str, tuple]): A dictionary representing the constraints.
+            data (pd.DataFrame): A dataframe representing the data.
+            target_importance (dict[str, float]): A dictionary representing the target importance.
 
         Returns:
             dict: A dictionary representing the optimal actions.
@@ -406,9 +410,19 @@ class Model:
         query = {
             "targets": targets,
             "actionable": actionable,
-            "fixed": fixed,
-            "constraints": constraints
         }
+
+        if fixed:
+            query["fixed"] = fixed
+
+        if constraints:
+            query["constraints"] = constraints
+
+        if data is not None:
+            query["data"] = data.to_dict(orient="list")
+
+        if target_importance:
+            query["target_importance"] = target_importance
 
         try:
             response = requests.post(
