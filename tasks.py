@@ -1,6 +1,7 @@
 from invoke import task
 import os
 import re
+from tqdm import tqdm
 
 
 @task
@@ -136,3 +137,152 @@ def build_cli_docs(c):
 
     # Clean up the markdown file
     os.remove("cli_docs.md")
+
+
+@task
+def migrate_node(c):
+    """
+    Migrate the node to the new version.
+    """
+    from openai import OpenAI
+    client = OpenAI()
+
+    # Load all the .py files in the causadb directory and form a single prompt
+    python_codebase = ""
+    for root, dirs, files in os.walk("causadb"):
+        for file in files:
+            if file.endswith(".py"):
+                with open(os.path.join(root, file), 'r') as f:
+                    # Add the file name to the prompt
+                    python_codebase += f"Filename: {file}\n"
+                    python_codebase += "```python\n"
+                    python_codebase += f.read()
+                    python_codebase += "\n```\n\n"
+
+    # Load existing Node.js codebase that needs to be updated based on the Python code
+    node_codebase = ""
+    for root, dirs, files in os.walk("../causadb-node/src"):
+        for file in files:
+            if file.endswith(".ts"):
+                with open(os.path.join(root, file), 'r') as f:
+                    # Add the file name to the prompt
+                    node_codebase += f"Filename: {file}\n"
+                    node_codebase += "```typescript\n"
+                    node_codebase += f.read()
+                    node_codebase += "\n```\n\n"
+
+    user_prompt = f"""
+    === Up to date Python codebase ===
+    {python_codebase}
+
+    === Existing Node.js codebase ===
+    {node_codebase}
+    """
+
+    # Define a prompt for converting the Python code to Node.js
+    system_prompt = """
+    You are a Python to Node.js code converter. Convert the following Python codebase to Node.js. 
+    The Python codebase is up to date, and the Node.js codebase is out of date.
+    Your task is to bring the Node.js codebase up to date with the Python codebase.
+    Keep the code structure and comments the same, unless they are specific to Python syntax or there is a mistake in the code.
+    Use TypeScript syntax. Use the existing Node.js codebase as a reference.
+    Produce the Node.js codebase in full, including all files and their contents.
+    I have an existing Node.js codebase that you should update based on the Python code.
+    The Node.js codebase is provided in the prompt under the "=== Existing Node.js codebase ===" section.
+    The Python codebase is provided in the prompt under the "=== Up to date Python codebase ===" section.
+    Don't include Python-specific comments, code, or files in the output. (e.g. no __init__.py files, etc)
+    I will be using a parser to convert your code to actual files. Please ensure that your output and code is correct and complete.
+    I'll be checking git diffs to see what you've changed, so make sure to keep the changes clean and organized.
+    Include the entire Node.js codebase in the output, including all files and their contents. Even if the file has not changed, include it in the output.
+    Don't add any extra information in the output, as I need a clean output so I can easily parse it.
+    Use modern Node.js features and best practices where applicable.
+    Files should be named the same as the Python files, but with a .ts extension. They
+    should be encoded as Filename: <filename>.ts., and the code should be enclosed in triple backticks, as follows:
+    Filename: <filename>.ts
+    ```typescript
+    <code here>
+    ```
+    Keep to this format for each file in the codebase.
+    """
+
+    print(user_prompt)
+
+    print("Generating response...")
+
+    completion = client.chat.completions.create(
+        model="gpt-4-turbo",
+        messages=[
+            {"role": "system", "content": system_prompt},
+            {"role": "user", "content": user_prompt}
+        ],
+        stream=True
+    )
+
+    existing_lines = node_codebase.count("\n")
+
+    pbar = tqdm(total=existing_lines)
+
+    line_count = 0
+    response = ""
+    for chunk in completion:
+        if chunk.choices[0].delta.content is not None:
+            response += chunk.choices[0].delta.content
+            new_lines = chunk.choices[0].delta.content.count("\n")
+            line_count += new_lines
+            pbar.update(new_lines)
+
+    pbar.close()
+
+    print("Response generated. Saving to file...")
+
+    # Save the response to a file
+    with open("migrate_node_response.txt", 'w') as f:
+        f.write(response)
+
+    print("Response saved to migrate_node_response.txt")
+
+
+@task
+def convert_node_to_codebase(c):
+    with open("migrate_node_response.txt", 'r') as f:
+        response = f.read()
+
+    # # Split the response into sections based on the file names
+    # sections = response.split("Filename: ")
+
+    # # Remove the first empty section
+    # sections = sections[1:]
+
+    # Create the causadb-node directory if it doesn't exist
+    # if not os.path.exists("../causadb-node"):
+    #     os.makedirs("../causadb-node")
+
+    # # Create the src directory if it doesn't exist
+    # if not os.path.exists("../causadb-node/src"):
+    #     os.makedirs("../causadb-node/src")
+
+    if not os.path.exists("test_node_output"):
+        os.makedirs("test_node_output")
+
+    # # Write the sections to files
+    # for section in sections:
+    #     # Split the section into the filename and the code
+    #     lines = section.split("\n")
+    #     filename = lines[0].strip()
+    #     code = "\n".join(lines[2:])
+
+    #     # Write the code to the file
+    #     with open(f"../causadb-node/src/{filename}", 'w') as f:
+    #         f.write(code)
+
+    import re
+    pattern = r'Filename: ([^\.]+\.ts)\s*```typescript\s*([^`]+)```'
+    matches = re.findall(pattern, response, re.DOTALL)
+
+    for filename, code in matches:
+        print(f"Filename: {filename}")
+        print("Code:")
+        print(code)
+        print("-" * 40)
+
+    print("Node.js codebase written to causadb-node/src directory")

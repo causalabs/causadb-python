@@ -33,6 +33,7 @@ invoke = "^2.2.0"
 pydoc-markdown = "^4.8.2"
 pytest = "^7.4.4"
 jupyter = "^1.0.0"
+openai = "^1.25.1"
 
 [build-system]
 requires = ["poetry-core"]

@@ -410,10 +410,6 @@ class Model:
         query = {
             "targets": targets,
             "actionable": actionable,
-            # "fixed": fixed,
-            # "constraints": constraints,
-            # "data": data,
-            # "target_importance": target_importance
         }
 
         if fixed:
@@ -424,7 +420,6 @@ class Model:
 
         if data is not None:
             query["data"] = data.to_dict(orient="list")
-            print(query["data"])
 
         if target_importance:
             query["target_importance"] = target_importance

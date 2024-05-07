@@ -63,12 +63,23 @@ class Data:
             data (dict): The new data.
         """
 
-        # Check if the data are valid (no missing values, all numeric)
-        df = pd.DataFrame.from_dict(data) \
-            .apply(pd.to_numeric, errors="coerce")
+        # Check if the data are valid (no missing values, all numeric or string values)
+        df = pd.DataFrame(data)
         if df.isnull().values.any():
+            raise Exception("Data contains missing values")
+        if not all(df.map(lambda x: isinstance(x, (int, float, str))).all()):
+            raise Exception("Data contains non-numeric or non-string values")
+
+        # Check that data types are consistent within each column
+        inconsistent_columns = []
+        for k, v in df.to_dict(orient='list').items():
+            if not all(isinstance(value, type(v[0])) for value in v):
+                inconsistent_columns.append(k)
+
+        if len(inconsistent_columns) > 0:
             raise Exception(
-                "Data contains missing values. Missing values are not yet supported.")
+                f"Data contains inconsistent data types in columns: {inconsistent_columns}"
+            )
 
         # Send a POST request to the CausaDB server to update the data
         try:
