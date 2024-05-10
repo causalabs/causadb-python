@@ -12,7 +12,9 @@ def plot_causal_graph(model: "Model", style="graph", **kwargs) -> None:
     Args:
         model: Model, the model to plot the causal graph for
         style: str, the style of the plot. Options are "graph" or "flowchart"
-        kwargs: additional keyword arguments to pass to the mermaid graph: theme - the theme of the graph, as defined in the mermaid documentation
+        kwargs: additional keyword arguments to pass to the mermaid graph:
+            - theme: str, the theme of the flowchart, as defined in the Mermaid documentation. Default is "default".
+            - direction: str, the direction of the flowchart ("TD", "LR", "BT", "RL"). Default is "TD".
 
     Returns:
         None
@@ -38,8 +40,10 @@ def plot_causal_graph(model: "Model", style="graph", **kwargs) -> None:
     elif style == "flowchart":
 
         theme = kwargs.get("theme", "default")
+        direction = kwargs.get("direction", "TD")
 
-        mermaid_string = "%%{init: {'theme':'" + theme + "'}}%%\ngraph TD\n"
+        mermaid_string = "%%{init: {'theme':'" + \
+            theme + "'}}%%\ngraph " + direction + "\n"
         for edge in model.get_edges():
             mermaid_string += f"{edge[0]} --> {edge[1]}\n"
 
