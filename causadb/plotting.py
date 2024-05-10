@@ -1,14 +1,18 @@
 import matplotlib.pyplot as plt
 import seaborn as sns
 import networkx as nx
+import mermaid as md
+from mermaid.graph import Graph
 
 
-def plot_causal_graph(model: "Model") -> None:
+def plot_causal_graph(model: "Model", style="graph", **kwargs) -> None:
     """
     Plot the causal graph of the model.
 
     Args:
         model: Model, the model to plot the causal graph for
+        style: str, the style of the plot. Options are "graph" or "flowchart"
+        kwargs: additional keyword arguments to pass to the mermaid graph: theme - the theme of the graph, as defined in the mermaid documentation
 
     Returns:
         None
@@ -18,17 +22,36 @@ def plot_causal_graph(model: "Model") -> None:
     plot_causal_graph(model)
     ```
     """
-    G = nx.DiGraph(model.get_edges())
-    pos = nx.layout.spring_layout(G)
-    nx.draw(
-        G,
-        pos=pos,
-        arrows=True,
-        with_labels=True,
-        node_size=2000,
-        node_color="#D6D6D6",
-        arrowsize=25,
-    )
+    if style == "graph":
+        G = nx.DiGraph(model.get_edges())
+        pos = nx.layout.spring_layout(G)
+        nx.draw(
+            G,
+            pos=pos,
+            arrows=True,
+            with_labels=True,
+            node_size=2000,
+            node_color="#D6D6D6",
+            arrowsize=25,
+        )
+
+    elif style == "flowchart":
+
+        theme = kwargs.get("theme", "default")
+
+        mermaid_string = "%%{init: {'theme':'" + theme + "'}}%%\ngraph TD\n"
+        for edge in model.get_edges():
+            mermaid_string += f"{edge[0]} --> {edge[1]}\n"
+
+        node_string = ",".join(model.get_nodes())
+        mermaid_string += f"""
+        classDef rounded rx:10px,ry:10px
+        class {node_string} rounded
+        """
+
+        # Plot the graph
+        graph = Graph('causal_model', mermaid_string)
+        return md.Mermaid(graph)
 
 
 def plot_causal_attributions(model: "Model", outcome: str, normalise: bool = False, ax=None, **kwargs) -> None:
