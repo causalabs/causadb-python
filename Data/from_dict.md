@@ -10,9 +10,3 @@ Add data from a dictionary.
 
 - `data` _dict_ - The data dictionary.
 
-<a id="causadb"></a>
-
-# causadb
-
-<a id="causadb.CausaDB"></a>
-
