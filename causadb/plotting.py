@@ -3,9 +3,11 @@ import seaborn as sns
 import networkx as nx
 import mermaid as md
 from mermaid.graph import Graph
+import tempfile
+from IPython.display import SVG, display
 
 
-def plot_causal_graph(model: "Model", style="graph", **kwargs) -> None:
+def plot_causal_graph(model: "Model", style="graph", bg="white", **kwargs) -> None:
     """
     Plot the causal graph of the model.
 
@@ -55,7 +57,19 @@ def plot_causal_graph(model: "Model", style="graph", **kwargs) -> None:
 
         # Plot the graph
         graph = Graph('causal_model', mermaid_string)
-        return md.Mermaid(graph)
+        mermaid_plot = md.Mermaid(graph)
+
+        # Write mermaid to temp file
+        with tempfile.NamedTemporaryFile() as f:
+            mermaid_plot.to_svg(f.name)
+            f.seek(0)
+
+            svg = f.read().decode("utf-8")
+
+        svg = svg.replace(
+            "#mermaid-svg{", f"#mermaid-svg{{background-color:{bg};")
+
+        display(SVG(svg))
 
 
 def plot_causal_attributions(model: "Model", outcome: str, normalise: bool = False, ax=None, **kwargs) -> None:
@@ -105,6 +119,6 @@ def plot_causal_attributions(model: "Model", outcome: str, normalise: bool = Fal
             text_x_position = bar.get_x()
         ax.text(text_x_position, bar.get_y() + bar.get_height()/2,
                 f'{bar_value:.2f}',
-                va='center', ha='left' if bar_value < 0 else 'left', fontsize=9)
+                va='center', ha='left' if bar_value < 0 else 'left', fontsize=9, color="white")
 
     return ax
